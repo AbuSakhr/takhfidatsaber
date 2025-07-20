@@ -8,83 +8,89 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- تحميل خطوط Google Fonts: Cairo للعربية و Inter للإنجليزية (لضمان التوافق) -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- إضافة Font Awesome لضمان ظهور أيقونات (إذا كانت مستخدمة) -->
+    <!-- إضافة Font Awesome لضمان ظهور أيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        /* تعريف المتغيرات (يمكن إزالتها إذا لم تعد تستخدم في أي مكان آخر) */
+        /* تعريف المتغيرات الأساسية للألوان والخطوط */
         :root {
-            --primary-500: #3b82f6; --primary-600: #2563eb;
-            --secondary-500: #10b981; --secondary-600: #059669;
-            --bg-light: #f8fafc; --bg-dark: #0f172a;
-            --text-dark: #0f172a; --text-light: #475569;
+            --primary-blue: #3b82f6;
+            --primary-purple: #6366f1;
+            --secondary-green: #10b981;
+            --bg-light: #f8fafc;
+            --text-dark: #1f2937;
+            --text-light: #4b5563;
+            --shadow-strong: 0 20px 50px rgba(0, 0, 0, 0.25);
+            --shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --shadow-light: 0 5px 15px rgba(0, 0, 0, 0.08);
         }
 
+        /* أنماط HTML و Body الأساسية */
         html, body {
-            height: 100%; /* ضمان أن html و body يملآن الارتفاع بالكامل */
+            height: 100%;
+            overflow-x: hidden; /* منع التمرير الأفقي */
         }
 
         body {
-            font-family: 'Cairo', sans-serif; /* استخدام خط عربي جميل */
-            background: linear-gradient(to bottom right, #e0f7fa, #e8f5e9); /* تدرج لوني للخلفية (أزرق فاتح وأخضر فاتح) */
-            min-height: 100vh; /* تأكد من أن الجسم يملأ ارتفاع الشاشة */
+            font-family: 'Cairo', sans-serif; /* خط عربي أساسي */
+            background: linear-gradient(to bottom right, #e0f7fa, #e8f5e9); /* تدرج لوني للخلفية */
+            min-height: 100vh;
             display: flex;
-            flex-direction: column; /* لجعل المحتوى يتراصف عمودياً */
+            flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* البدء من الأعلى */
-            padding: 0; /* إزالة أي حشوة افتراضية */
-            margin: 0; /* إزالة أي هوامش افتراضية */
-            overflow-x: hidden; /* منع التمرير الأفقي */
-            /* ضبط padding-top ليتناسب مع ارتفاع شريط العنوان الثابت */
-            padding-top: 4rem; /* ارتفاع تقريبي لشريط العنوان */
+            justify-content: flex-start;
+            padding: 0;
+            margin: 0;
+            padding-top: 4rem; /* مساحة لشريط العنوان الثابت */
         }
 
-        /* أنماط العنوان الجديد كشريط علوي صغير */
+        /* أنماط شريط العنوان العلوي الثابت */
         .page-title {
-            font-size: 1.75rem; /* حجم أكبر للعنوان */
-            font-weight: 800; /* خط سميك جداً */
-            color: #3b82f6; /* لون أزرق جذاب */
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary-blue);
             text-align: center;
-            padding: 0.75rem 1rem; /* حشوة أكبر للشريط */
-            background: linear-gradient(to right, #3b82f6, #6366f1); /* تدرج لوني للنص */
+            padding: 0.75rem 1rem;
+            background: linear-gradient(to right, var(--primary-blue), var(--primary-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            line-height: 1.2; /* تباعد أسطر مناسب */
-            flex-shrink: 0; /* منع العنوان من الانكماش */
-            width: 100%; /* لجعل الخلفية المتدرجة تمتد على العرض بالكامل */
-            background-color: #ffffff; /* خلفية بيضاء للشريط العلوي */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* ظل أقوى وجميل */
-            position: fixed; /* تثبيت الشريط في الأعلى */
+            line-height: 1.2;
+            flex-shrink: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: var(--shadow-medium); /* ظل جذاب */
+            position: fixed;
             top: 0;
             left: 0;
-            z-index: 1000; /* لضمان ظهوره فوق المحتوى */
+            z-index: 1000;
         }
 
-        /* أنماط واجهة الدردشة */
+        /* حاوية الدردشة الرئيسية */
         .chat-container {
             display: flex;
             flex-direction: column;
-            width: 95%; /* عرض أكبر لملء الشاشة */
-            max-width: 1000px; /* عرض الدردشة الأقصى */
-            flex-grow: 1; /* يجعل الدردشة تملأ المساحة المتبقية عمودياً */
-            margin: 1.5rem auto 1.5rem auto; /* مسافة علوية وسفلية، auto للتوسيط الأفقي */
+            width: 95%;
+            max-width: 1000px;
+            flex-grow: 1;
+            margin: 1.5rem auto 1.5rem auto;
             background-color: #ffffff;
             border-radius: 2.5rem; /* حواف مستديرة جداً */
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); /* ظل أقوى وأكثر جمالاً */
-            overflow: hidden; /* لإخفاء أي محتوى زائد */
-            direction: ltr; /* الدردشة بالإنجليزية، لذا الاتجاه من اليسار لليمين */
-            border: 1px solid #e0e0e0; /* حدود خفيفة */
+            box-shadow: var(--shadow-strong); /* ظل قوي وجميل */
+            overflow: hidden;
+            direction: ltr; /* اتجاه الدردشة من اليسار لليمين */
+            border: 1px solid #e0e0e0;
         }
 
+        /* منطقة سجل الدردشة (الرسائل) */
         .chat-history {
             flex-grow: 1;
-            padding: 2.5rem; /* حشوة أكبر */
-            overflow-y: auto; /* تمكين التمرير العمودي */
+            padding: 2.5rem;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem; /* مسافة أكبر بين الرسائل */
-            scroll-behavior: smooth; /* تمرير سلس */
-            background-color: #fcfdff; /* خلفية فاتحة جداً للدردشة */
+            gap: 1.5rem;
+            scroll-behavior: smooth;
+            background-color: #fcfdff;
         }
 
         /* تخصيص شريط التمرير (Webkit browsers) */
@@ -96,25 +102,27 @@
             border-radius: 10px;
         }
         .chat-history::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, #a78bfa, #8b5cf6); /* تدرج بنفسجي جذاب */
+            background: linear-gradient(to bottom, #a78bfa, #8b5cf6); /* تدرج بنفسجي */
             border-radius: 10px;
-            border: 2px solid #f0f0f0; /* حدود لجعل الإبهام يبدو منفصلاً */
+            border: 2px solid #f0f0f0;
         }
         .chat-history::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(to bottom, #8b5cf6, #6d28d9);
         }
 
-
+        /* أنماط الرسائل الفردية */
         .chat-message {
-            max-width: 80%; /* عرض أكبر للرسائل */
-            padding: 1.25rem 1.5rem; /* حشوة أكبر */
-            border-radius: 1.75rem; /* حواف مستديرة أكثر */
-            line-height: 1.7; /* تباعد أسطر مريح */
-            word-wrap: break-word; /* لكسر الكلمات الطويلة */
-            font-size: 1.1rem; /* حجم خط مناسب */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* ظل خفيف للفقاعات */
-            position: relative; /* لتمكين وضع الأزرار داخله بشكل مطلق */
-            animation: fadeIn 0.3s ease-out; /* تأثير ظهور لطيف */
+            max-width: 85%; /* عرض أكبر للرسائل */
+            padding: 1.25rem 1.5rem;
+            border-radius: 1.75rem;
+            line-height: 1.7;
+            word-wrap: break-word;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-light); /* ظل خفيف */
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+            display: flex; /* لترتيب الأيقونة والنص */
+            align-items: flex-start; /* محاذاة العناصر للأعلى */
         }
 
         @keyframes fadeIn {
@@ -122,190 +130,241 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* أنماط رسائل المستخدم */
         .user-message {
-            background: linear-gradient(to right, #e3f2fd, #bbdefb); /* أزرق فاتح وجميل لرسائل المستخدم */
-            color: #1e88e5; /* أزرق داكن للنص */
+            background: linear-gradient(to right, #e3f2fd, #bbdefb); /* أزرق فاتح */
+            color: #1e88e5;
             align-self: flex-end; /* محاذاة لليمين */
-            border-bottom-right-radius: 0.75rem; /* حافة مربعة قليلاً لأسفل اليمين */
+            border-bottom-right-radius: 0.75rem;
+            flex-direction: row-reverse; /* أيقونة على اليمين، ثم النص */
         }
 
+        .user-message .message-avatar {
+            margin-left: 1rem; /* مسافة بين الأيقونة والنص */
+            margin-right: 0;
+        }
+
+        /* أنماط رسائل الذكاء الاصطناعي */
         .ai-message {
-            background: linear-gradient(to left, #e8f5e9, #c8e6c9); /* أخضر فاتح وجميل لرسائل الذكاء الاصطناعي */
-            color: #388e3c; /* أخضر داكن للنص */
+            background: linear-gradient(to left, #e8f5e9, #c8e6c9); /* أخضر فاتح */
+            color: #388e3c;
             align-self: flex-start; /* محاذاة لليسار */
-            padding-top: 45px; /* مساحة إضافية للأزرار في الأعلى */
+            padding-top: 45px; /* مساحة للأزرار في الأعلى */
+            flex-direction: row; /* أيقونة على اليسار، ثم النص */
         }
 
-        /* أنماط خاصة للشرح المنظم */
+        .ai-message .message-avatar {
+            margin-right: 1rem; /* مسافة بين الأيقونة والنص */
+            margin-left: 0;
+        }
+
+        /* أيقونة المرسل (بوت أو مستخدم) */
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            min-width: 35px; /* لمنع الانكماش */
+            min-height: 35px; /* لمنع الانكماش */
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            align-self: flex-start; /* محاذاة الأيقونة للأعلى */
+        }
+
+        .message-avatar.user {
+            background-color: #3b82f6; /* أزرق للمستخدم */
+        }
+
+        .message-avatar.ai {
+            background-color: #10b981; /* أخضر للبوت */
+        }
+
+        .message-content {
+            flex-grow: 1; /* لجعل المحتوى يملأ المساحة المتبقية */
+        }
+
+        /* أنماط خاصة للشرح المنظم (داخل رسائل الذكاء الاصطناعي) */
         .ai-message .structured-translation {
-            display: block; /* لجعلها تأخذ سطرًا كاملاً */
-            background-color: #f0f8ff; /* لون خلفية أفتح للشرح */
-            border-left: 6px solid #00bcd4; /* خط جانبي أزرق سماوي أكثر سمكاً */
-            padding: 1.25rem 1.5rem; /* حشوة أكبر */
-            margin-top: 1.25rem; /* مسافة علوية أكبر */
-            border-radius: 1rem; /* حواف مستديرة أكثر */
-            font-size: 1.05rem; /* حجم خط مناسب */
-            line-height: 1.8; /* تباعد أسطر مريح */
-            direction: rtl; /* لجعل الشرح العربي من اليمين لليسار */
-            text-align: right; /* محاذاة النص لليمين */
-            font-family: 'Cairo', sans-serif; /* التأكد من استخدام خط عربي */
-            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.08); /* ظل داخلي خفيف */
-            border: 1px solid #e0f2f7; /* حدود خفيفة */
+            display: block;
+            background-color: #f0f8ff;
+            border-left: 6px solid #00bcd4; /* خط جانبي أزرق سماوي */
+            padding: 1.25rem 1.5rem;
+            margin-top: 1.25rem;
+            border-radius: 1rem;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            direction: rtl; /* للشرح العربي */
+            text-align: right;
+            font-family: 'Cairo', sans-serif;
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0f2f7;
         }
 
         .ai-message .structured-translation .arabic-original {
             font-weight: bold;
-            color: #3f51b5; /* لون أزرق للكلمة العربية الأصلية */
+            color: #3f51b5;
             display: inline-block;
-            margin-left: 0.75rem; /* مسافة بين العربي والإنجليزي */
+            margin-left: 0.75rem;
         }
         .ai-message .structured-translation .english-part {
             font-weight: bold;
-            color: #1e88e5; /* لون أزرق للكلمة الإنجليزية */
-            direction: ltr; /* للتأكد من أن الكلمة الإنجليزية تبدأ من اليسار */
+            color: #1e88e5;
+            direction: ltr;
             display: inline-block;
-            margin-left: 0.75rem; /* مسافة بين الإنجليزي والنطق */
+            margin-left: 0.75rem;
         }
         .ai-message .structured-translation .arabic-pronunciation {
-            color: #6a1b9a; /* لون بنفسجي للنطق */
-            direction: rtl; /* للتأكد من أن النطق العربي يبدأ من اليمين */
+            color: #6a1b9a;
+            direction: rtl;
             display: inline-block;
-            margin-left: 0.75rem; /* مسافة بين النطق والمعنى */
+            margin-left: 0.75rem;
         }
         .ai-message .structured-translation .equals-sign {
-            color: #333; /* لون لعلامة التساوي */
+            color: #333;
             font-weight: bold;
-            margin: 0 0.4rem; /* مسافة حول علامة التساوي */
+            margin: 0 0.4rem;
         }
         .ai-message .structured-translation .arabic-meaning {
-            color: #d84315; /* لون برتقالي للمعنى العربي */
-            direction: rtl; /* للتأكد من أن المعنى العربي يبدأ من اليمين */
+            color: #d84315;
+            direction: rtl;
             display: inline-block;
         }
 
-        /* أنماط الأزرار الجديدة (نسخ وصوت) - تم تعديلها لتكون أفقية في الأعلى */
+        /* أنماط الأزرار (نسخ وصوت) في رسائل الذكاء الاصطناعي */
         .message-actions {
             position: absolute;
-            top: 10px; /* ضبط الموضع العلوي */
-            right: 12px; /* محاذاة لليمين */
+            top: 10px;
+            right: 12px;
             display: flex;
-            flex-direction: row; /* ترتيب الأزرار أفقياً */
-            gap: 10px; /* المسافة بين الأزرار */
+            flex-direction: row;
+            gap: 10px;
             z-index: 10;
         }
 
         .copy-btn, .speech-btn {
-            background-color: rgba(255, 255, 255, 0.9); /* خلفية بيضاء شفافة قليلاً */
-            border: 1px solid #e0e0e0; /* حدود رمادية فاتحة */
-            border-radius: 50%; /* أزرار دائرية */
-            width: 35px; /* حجم صغير */
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e0e0e0;
+            border-radius: 50%;
+            width: 35px;
             height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 0.85rem; /* حجم الأيقونة */
-            color: #6b7280; /* لون الأيقونة رمادي */
+            font-size: 0.85rem;
+            color: #6b7280;
             transition: all 0.2s ease-in-out;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1); /* ظل خفيف */
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
         }
 
         .copy-btn:hover, .speech-btn:hover {
-            background-color: #f0f0f0; /* لون أفتح عند التحويم */
-            color: #374151; /* لون أغمق للأيقونة عند التحويم */
+            background-color: #f0f0f0;
+            color: #374151;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
+        /* رسالة تأكيد النسخ */
         .copy-feedback {
             position: absolute;
-            top: 45px; /* وضعها أسفل الأزرار مباشرة */
-            right: 12px; /* محاذاة لليمين مع الأزرار */
-            background-color: #10b981; /* لون أخضر (Tailwind green-500) */
+            top: 45px;
+            right: 12px;
+            background-color: var(--secondary-green);
             color: white;
             padding: 6px 12px;
-            border-radius: 0.75rem; /* حواف مستديرة */
+            border-radius: 0.75rem;
             font-size: 0.8rem;
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
-            white-space: nowrap; /* منع التفاف النص */
-            pointer-events: none; /* جعلها غير قابلة للنقر */
+            white-space: nowrap;
+            pointer-events: none;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
+        /* منطقة إدخال الدردشة */
         .chat-input-area {
             display: flex;
-            padding: 1.75rem; /* حشوة أكبر */
+            padding: 1.75rem;
             border-top: 1px solid #e2e8f0;
-            background-color: #f8fafc; /* خلفية فاتحة */
-            box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.05); /* ظل علوي خفيف */
+            background-color: #f8fafc;
+            box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.05);
         }
 
         .chat-input-area textarea {
             flex-grow: 1;
-            padding: 1.1rem 1.5rem; /* حشوة أكبر */
-            border: 2px solid #cbd5e0; /* حدود أكثر وضوحاً */
-            border-radius: 2.5rem; /* حواف مستديرة جداً */
-            font-size: 1.1rem; /* حجم خط مناسب */
-            resize: none; /* منع تغيير حجم مربع النص يدوياً */
+            padding: 1.1rem 1.5rem;
+            border: 2px solid #cbd5e0;
+            border-radius: 2.5rem;
+            font-size: 1.1rem;
+            resize: none;
             outline: none;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            min-height: 60px; /* ارتفاع أولي ثابت أكبر */
-            overflow-y: hidden; /* إخفاء شريط التمرير حتى يتجاوز الارتفاع */
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08); /* ظل داخلي خفيف */
+            min-height: 60px;
+            overflow-y: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
             font-family: 'Inter', sans-serif; /* خط Inter لمربع النص */
-            color: #333;
+            color: var(--text-dark);
         }
 
         .chat-input-area textarea:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.4); /* ظل أقوى عند التركيز */
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.4);
         }
 
+        /* زر الإرسال */
         .chat-input-area button {
-            background: linear-gradient(to right, #6366f1, #8b5cf6); /* تدرج لوني جميل */
+            background: linear-gradient(to right, var(--primary-purple), #8b5cf6); /* تدرج لوني جميل */
             color: white;
             border: none;
-            border-radius: 2.5rem; /* حواف مستديرة جداً */
-            padding: 1.1rem 2rem; /* حشوة أكبر */
-            margin-left: 1.5rem; /* مسافة أكبر */
-            font-size: 1.15rem; /* حجم خط أكبر */
+            border-radius: 2.5rem;
+            padding: 1.1rem 2rem;
+            margin-left: 1.5rem;
+            font-size: 1.15rem;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* ظل أقوى */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.85rem; /* مسافة أكبر للأيقونة */
-            font-family: 'Cairo', sans-serif; /* خط القاهرة للزر */
+            gap: 0.85rem;
+            font-family: 'Cairo', sans-serif;
         }
 
         .chat-input-area button:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(to right, #4f46e5, #7c3aed); /* تدرج أغمق عند التحويم */
+            background: linear-gradient(to right, #4f46e5, #7c3aed);
         }
 
+        /* مؤشر التحميل (يكتب...) */
         .loading-chat-indicator {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* محاذاة لليسار */
             gap: 0.8rem;
-            color: #6366f1;
+            color: var(--primary-purple);
             font-weight: 600;
             margin-top: 0.75rem;
-            align-self: flex-start; /* محاذاة لليسار */
             font-size: 1.05rem;
-            animation: pulse 1.5s infinite ease-in-out; /* تأثير نبض للتحميل */
+            animation: pulse 1.5s infinite ease-in-out;
+            padding: 1.25rem 1.5rem; /* نفس حشوة الرسائل */
+            border-radius: 1.75rem;
+            background-color: #e8f5e9; /* نفس خلفية رسائل AI */
+            box-shadow: var(--shadow-light);
+            max-width: fit-content; /* لجعل الخلفية تناسب المحتوى */
         }
 
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
+            50% { transform: scale(1.02); opacity: 0.9; } /* نبض خفيف */
             100% { transform: scale(1); opacity: 1; }
         }
 
-        .loading-chat-indicator svg {
+        .loading-chat-indicator .spinner {
             animation: spin 1s linear infinite;
         }
 
@@ -317,19 +376,17 @@
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .page-title {
-                font-size: 1.25rem; /* حجم أصغر للعنوان على الجوال */
+                font-size: 1.25rem;
                 padding: 0.5rem 0.75rem;
-                padding-top: 0.75rem; /* حشوة علوية أصغر */
-                padding-bottom: 0.5rem; /* حشوة سفلية أصغر */
             }
             body {
-                padding-top: 3.5rem; /* تعديل padding-top للجوال */
+                padding-top: 3.5rem;
             }
             .chat-container {
-                width: 98%; /* عرض أكبر على الجوال */
+                width: 98%;
                 margin: 0.75rem auto;
                 border-radius: 1.5rem;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                box-shadow: var(--shadow-medium);
             }
             .chat-history {
                 padding: 1.25rem;
@@ -341,7 +398,20 @@
                 border-radius: 1.25rem;
             }
             .ai-message {
-                padding-top: 38px; /* مساحة أقل للأزرار على الجوال */
+                padding-top: 38px;
+            }
+            .message-avatar {
+                width: 30px;
+                height: 30px;
+                min-width: 30px;
+                min-height: 30px;
+                font-size: 1rem;
+            }
+            .user-message .message-avatar {
+                margin-left: 0.75rem;
+            }
+            .ai-message .message-avatar {
+                margin-right: 0.75rem;
             }
             .message-actions {
                 top: 8px;
@@ -373,9 +443,13 @@
                 margin-left: 1rem;
             }
             .copy-feedback {
-                top: 40px; /* تعديل الموضع على الجوال */
+                top: 40px;
                 font-size: 0.7rem;
                 padding: 4px 10px;
+            }
+            .loading-chat-indicator {
+                padding: 0.9rem 1.1rem;
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -410,13 +484,23 @@
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('chat-message', `${sender}-message`);
 
-            if (sender === 'ai') {
-                // حاوية لمحتوى الرسالة النصي
-                const messageContentDiv = document.createElement('div');
-                messageContentDiv.classList.add('message-content');
-                messageContentDiv.innerHTML = message; // استجابة الذكاء الاصطناعي بتنسيق HTML
+            // إضافة أيقونة المرسل (بوت أو مستخدم)
+            const avatarDiv = document.createElement('div');
+            avatarDiv.classList.add('message-avatar', sender);
+            if (sender === 'user') {
+                avatarDiv.innerHTML = '<i class="fas fa-user"></i>'; // أيقونة المستخدم
+            } else {
+                avatarDiv.innerHTML = '<i class="fas fa-robot"></i>'; // أيقونة البوت
+            }
+            messageDiv.appendChild(avatarDiv);
 
-                // حاوية لأزرار الإجراءات (نسخ، صوت)
+            // حاوية لمحتوى الرسالة النصي
+            const messageContentDiv = document.createElement('div');
+            messageContentDiv.classList.add('message-content');
+            messageContentDiv.innerHTML = message; // استجابة الذكاء الاصطناعي بتنسيق HTML أو نص المستخدم
+
+            if (sender === 'ai') {
+                // حاوية لأزرار الإجراءات (نسخ، صوت) لرسائل الذكاء الاصطناعي
                 const messageActionsDiv = document.createElement('div');
                 messageActionsDiv.classList.add('message-actions');
 
@@ -514,11 +598,10 @@
                 messageActionsDiv.appendChild(speechBtn);
 
                 messageDiv.appendChild(messageActionsDiv); // إضافة الأزرار أولاً
-                messageDiv.appendChild(messageContentDiv);
                 messageDiv.appendChild(copyFeedbackSpan); // إضافة رسالة التأكيد إلى الرسالة الرئيسية
-            } else {
-                messageDiv.innerHTML = message;
             }
+            
+            messageDiv.appendChild(messageContentDiv); // إضافة محتوى الرسالة
 
             chatHistoryDiv.appendChild(messageDiv);
             chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // التمرير إلى الأسفل
@@ -529,13 +612,18 @@
             if (show) {
                 const loadingDiv = document.createElement('div');
                 loadingDiv.id = 'loadingChatIndicator';
-                loadingDiv.classList.add('loading-chat-indicator', 'ai-message');
+                loadingDiv.classList.add('loading-chat-indicator');
                 loadingDiv.innerHTML = `
-                    <svg class="animate-spin h-5 w-5 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>يكتب...</span>
+                    <div class="message-avatar ai">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <svg class="spinner h-5 w-5 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>يكتب...</span>
+                    </div>
                 `;
                 chatHistoryDiv.appendChild(loadingDiv);
                 chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
@@ -593,7 +681,7 @@
                     contents: [systemPrompt, ...chatHistory]
                 };
 
-                const apiKey = "AIzaSyCAtLdN4wO55U9OE-HATmq20tfi5f1TQvw"; // تم إضافة مفتاح API الخاص بك هنا
+                const apiKey = "AIzaSyCAtLdN4wO55U9OE-HATmq20tfi5f1TQvw"; // تم إعادة مفتاح API الخاص بك هنا
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
