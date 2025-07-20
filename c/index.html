@@ -1,1 +1,711 @@
-c
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شروحات بصرية بملء الشاشة عرضياً مع صور محددة ومميزات ChatGPT Plus</title>
+    <!-- تحميل Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تحميل خطوط Google Fonts: Cairo للعربية و Inter للإنجليزية (لضمان التوافق) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for a refined look, full-screen horizontal, and product-like separation */
+        body {
+            font-family: 'Cairo', sans-serif; /* استخدام خط عربي جميل */
+            background: linear-gradient(to bottom right, #e0f2fe, #e3f2fd); /* تدرج لوني للخلفية */
+            min-height: 100vh; /* تأكد من أن الجسم يملأ ارتفاع الشاشة */
+            display: flex;
+            flex-direction: column; /* لجعل المحتوى يتراصف عمودياً */
+            align-items: center;
+            justify-content: flex-start; /* البدء من الأعلى */
+            padding: 0; /* إزالة أي حشوة افتراضية */
+            margin: 0; /* إزالة أي هوامش افتراضية */
+            overflow-x: hidden; /* منع التمرير الأفقي */
+        }
+
+        .main-container {
+            background-color: #ffffff;
+            border-radius: 0; /* إزالة الحواف المستديرة لجعلها تملأ الشاشة */
+            box-shadow: none; /* إزالة الظل من الحاوية الرئيسية */
+            padding: 0; /* إزالة أي حشوة من الحاوية الرئيسية */
+            max-width: none; /* إزالة أقصى عرض */
+            width: 100%; /* جعلها تملأ العرض بالكامل */
+            flex-grow: 1; /* السماح للحاوية الرئيسية بالنمو */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            padding: 2rem 0; /* إزالة الحشوة الأفقية: 2rem علوي وسفلي، 0 أفقي */
+            text-align: center;
+            background-color: #ffffff; /* خلفية بيضاء للعنوان */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* ظل خفيف للعنوان */
+            margin-bottom: 2rem; /* مسافة أسفل العنوان */
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* عمود واحد افتراضياً */
+            gap: 2rem; /* مسافة واضحة بين كل بطاقة (منتج) */
+            width: 100%;
+            padding: 0; /* إزالة الحشوة الأفقية بالكامل */
+            box-sizing: border-box; /* لضمان أن الحشوة لا تزيد من العرض الكلي */
+        }
+
+        .image-description-card {
+            display: flex;
+            flex-direction: column; /* عمودي افتراضيًا: الصورة فوق الشرح */
+            align-items: stretch;
+            background-color: #ffffff; /* خلفية بيضاء لكل بطاقة */
+            border-radius: 1rem; /* حواف مستديرة للبطاقات */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* ظل خفيف وواضح لكل بطاقة */
+            transition: all 0.3s ease-in-out; /* تأثير انتقال سلس */
+            overflow: hidden; /* لإخفاء أي جزء زائد من الصورة */
+            margin: 0 1rem; /* إضافة هامش أفقي صغير لكل بطاقة لتبدو مفصولة عن حواف الشاشة */
+            cursor: pointer; /* إضافة مؤشر اليد للإشارة إلى أنها قابلة للنقر */
+        }
+
+        /* تأثير التحويم على البطاقة بأكملها لجعلها تبرز كمنتج */
+        .image-description-card:hover {
+            transform: translateY(-8px) scale(1.01); /* رفع وتكبير خفيف */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); /* ظل أكبر وأوضح */
+            border: 2px solid #6366f1; /* حد ملون عند التحويم */
+        }
+
+        .image-wrapper {
+            width: 100%;
+            height: 300px; /* ارتفاع ثابت للصور */
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative; /* مهم لوضع النص فوق الصورة */
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* لضمان ملء الصورة للمساحة دون تشويه */
+            transition: transform 0.3s ease-in-out; /* تأثير تكبير الصورة عند التحويم */
+        }
+
+        /* تكبير الصورة داخل البطاقة عند التحويم على البطاقة بأكملها */
+        .image-description-card:hover .image-wrapper img {
+            transform: scale(1.08);
+        }
+
+        /* Style for the click-to-enlarge text overlay */
+        .click-to-enlarge-text {
+            position: absolute;
+            bottom: 0; /* Position at the bottom of the image wrapper */
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+            color: #fff;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-size: 0.9rem; /* Smaller font size for subtlety */
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none; /* Allow clicks to pass through to the image */
+            box-sizing: border-box; /* Include padding in width */
+            font-weight: 600; /* Slightly bolder text */
+        }
+
+        /* Show the text on hover over the image card */
+        .image-description-card:hover .click-to-enlarge-text {
+            opacity: 1; /* Fully visible on hover */
+        }
+
+        /* تصميم الخط الفاصل الداخلي بين الصورة والشرح */
+        .separator-line {
+            width: 80%; /* عرض الخط الفاصل على الجوال (أفقي) */
+            height: 3px; /* سمك الخط الفاصل */
+            background: linear-gradient(to right, transparent, #8b5cf6, #6366f1, transparent); /* تدرج لوني أنيق */
+            margin: 1.5rem auto; /* توسيط الخط وإعطائه مسافة */
+            border-radius: 1.5px; /* حواف مستديرة قليلاً */
+        }
+
+        .text-content {
+            padding: 1.5rem; /* حشوة للنص داخل البطاقة */
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Fullscreen Image Overlay */
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* خلفية شبه شفافة سوداء */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* تأكد من أنها فوق كل شيء آخر */
+            opacity: 0; /* مخفية في البداية */
+            visibility: hidden; /* مخفية في البداية */
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .fullscreen-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .fullscreen-overlay img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain; /* لضمان عرض الصورة بالكامل داخل المساحة المتاحة */
+            border-radius: 0.5rem; /* حواف مستديرة للصورة المعروضة */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); /* ظل خفيف للصورة */
+            transform: translateY(0); /* Default position for swipe animation */
+            transition: transform 0.3s ease-out; /* Smooth transition for swipe */
+        }
+
+        /* Close button for fullscreen overlay */
+        .close-button {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background-color: #fff;
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s ease;
+        }
+
+        .close-button:hover {
+            background-color: #eee;
+        }
+
+        /* New section for ChatGPT Plus features */
+        .features-section {
+            width: 100%;
+            max-width: 1200px; /* Max width for the features section */
+            margin: 4rem auto; /* Top/bottom margin and auto horizontal margin for centering */
+            padding: 2rem;
+            text-align: center;
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* More rounded corners for the section */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Stronger shadow for the section */
+            direction: rtl; /* Ensure RTL for this section */
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column for mobile */
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe); /* Light blue gradient */
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #6366f1, #8b5cf6); /* Purple-blue gradient for icons */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer styles */
+        .footer-section {
+            width: 100%;
+            padding: 2rem;
+            margin-top: 4rem; /* Space above the footer */
+            background-color: #1a202c; /* Dark background for footer */
+            color: #e2e8f0; /* Light text color */
+            text-align: center;
+            border-top-left-radius: 0; /* No rounded top corners as per image */
+            border-top-right-radius: 0; /* No rounded top corners as per image */
+            box-shadow: none; /* No shadow as per image */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            direction: rtl; /* Ensure RTL for this section */
+            position: relative; /* For WhatsApp button positioning */
+        }
+
+        .footer-heading {
+            font-size: 2.2rem; /* Larger font for heading */
+            font-weight: 800; /* Extra bold */
+            color: #ffffff; /* White color for the heading */
+            margin-bottom: 1.5rem; /* Space below heading */
+        }
+
+        .contact-info-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-item-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            color: #cbd5e0; /* Light gray text */
+            transition: color 0.2s ease;
+            text-decoration: none; /* Remove underline from links */
+        }
+
+        .contact-item-footer:hover {
+            color: #6366f1; /* Purple on hover */
+        }
+
+        /* Styling for SVG icons in footer contact items */
+        .contact-item-footer .icon-svg {
+            width: 24px;
+            height: 24px;
+            fill: #a78bfa; /* Purple icon color */
+            vertical-align: middle; /* Align icon with text */
+        }
+
+        /* Styling for image icons in footer contact items */
+        .contact-item-footer .icon-img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            vertical-align: middle; /* Align icon with text */
+        }
+
+        .copyright-text-footer {
+            font-size: 0.9rem;
+            color: #94a3b8; /* Lighter gray for copyright */
+            margin-top: 1rem; /* Space above copyright text */
+        }
+
+        /* WhatsApp Button */
+        .whatsapp-button {
+            position: fixed; /* Fixed position for floating button */
+            bottom: 20px; /* Distance from bottom */
+            left: 20px; /* Distance from left */
+            background-color: #25d366; /* WhatsApp green */
+            color: white;
+            border-radius: 50%; /* Circular button */
+            width: 60px; /* Size of the button */
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000; /* Ensure it's above other content */
+        }
+
+        .whatsapp-button:hover {
+            transform: scale(1.1); /* Slightly enlarge on hover */
+        }
+
+        .whatsapp-button img {
+            width: 32px; /* Size of the WhatsApp icon image */
+            height: 32px;
+            object-fit: contain;
+        }
+
+
+        /* التجاوبية للشاشات الصغيرة (أفقي) وما فوق */
+        @media (min-width: 640px) {
+            .content-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* عمودين أو أكثر حسب المساحة */
+                gap: 2rem; /* مسافة بين البطاقات */
+            }
+            .image-description-card {
+                flex-direction: column; /* تبقى عمودية لتشبه المنتجات */
+                min-height: auto; /* ارتفاع تلقائي */
+                margin: 0 1.5rem; /* هامش أفقي أكبر قليلاً على الشاشات الأصغر */
+            }
+            .image-wrapper {
+                height: 250px; /* ارتفاع ثابت للصور في العرض الأفقي */
+            }
+            .separator-line {
+                width: 80%; /* يبقى أفقي */
+                height: 3px;
+                margin: 1.5rem auto;
+            }
+            .text-content {
+                padding: 1.5rem;
+            }
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr); /* Two columns for small screens */
+            }
+        }
+
+        /* التجاوبية للشاشات المتوسطة والكبيرة */
+        @media (min-width: 1024px) {
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr); /* عمودين في الشاشات الكبيرة */
+                padding: 0; /* إزالة الحشوة الأفقية */
+            }
+            .image-description-card {
+                flex-direction: row; /* الصورة بجانب الشرح على الشاشات الكبيرة */
+                margin: 0 2rem; /* هامش أفقي أكبر على الشاشات الكبيرة */
+            }
+            .image-wrapper {
+                width: 50%;
+                height: auto;
+                min-height: 300px; /* ارتفاع أدنى للصورة */
+            }
+            .text-content {
+                width: 50%;
+            }
+            .separator-line {
+                width: 3px; /* عمودي على الشاشات الكبيرة */
+                height: 80%;
+                margin: 0 1.5rem;
+            }
+            /* ترتيب الصورة والنص (متناوب) */
+            .image-description-card:nth-child(odd) .image-wrapper {
+                order: 2; /* الصورة على اليسار للنص في البطاقات الفردية */
+            }
+            .image-description-card:nth-child(odd) .text-content {
+                order: 1; /* النص على اليمين للصورة في البطاقات الفردية */
+                text-align: right;
+            }
+            .image-description-card:nth-child(even) .image-wrapper {
+                order: 1; /* الصورة على اليمين للنص في البطاقات الزوجية */
+            }
+            .image-description-card:nth-child(even) .text-content {
+                order: 2; /* النص على اليسار للصورة في البطاقات الزوجية */
+                text-align: left;
+            }
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr); /* Three columns for large screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-section">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight mb-4">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                    اشتراك شات جيبي تي  بحساب مشترك 
+                </span>
+            </h1>
+            <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+                تحصل عند الاشتراك  على
+
+ بريد اكتروني مع كلمة سر 
+
+البريد
+
+ مشترك بينك وبين اشخاص اخرين محدودين .
+            </p>
+        </div>
+
+        <div class="content-grid">
+            <!-- الشرح كمنتج 1 -->
+            <div class="image-description-card">
+                <div class="image-wrapper">
+                    <img src="sabb1.png" alt="صورة توضيحية 1">
+                    <!-- النص التوجيهي الجديد -->
+                    <div class="click-to-enlarge-text">
+                        اضغط هنا لتكبير الصورة
+                    </div>
+                </div>
+                <!-- الخط الفاصل بين الصورة والشرح داخل البطاقة -->
+                <div class="separator-line"></div>
+                <div class="text-content">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-purple-700 mb-4">عرض النماذج</h2>
+                    <p class="text-base sm:text-lg text-gray-700 leading-relaxed">
+                        كل النماذج محدود وكل نموج يكمل ويعود نماذج خطة بلاس .
+                    </p>
+                </div>
+            </div>
+
+            <!-- الشرح كمنت 2 -->
+            <div class="image-description-card">
+                <div class="image-wrapper">
+                    <img src="sabb2.png" alt="صورة توضيحية 2">
+                    <!-- النص التوجيهي الجديد -->
+                    <div class="click-to-enlarge-text">
+                        اضغط هنا لتكبير الصورة
+                    </div>
+                </div>
+                <!-- الخط الفاصل بين الصورة والشرح داخل البطاقة -->
+                <div class="separator-line"></div>
+                <div class="text-content">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-blue-700 mb-4"> استخدام الدردشه المؤقته</h2>
+                    <p class="text-base sm:text-lg text-gray-700 leading-relaxed">
+                        إذا مابتريد تضهر محادثتك بين محادثات الآخرين المحفوضه استخدم الدردشه المؤقته ولاكن عند خروجك من التطبيق بتنحذف محادثتك.
+                    </p>
+                </div>
+            </div>
+
+            <!-- الشرح كمنتج 3 -->
+            <div class="image-description-card">
+                <div class="image-wrapper">
+                    <img src="sabb3.png" alt="صورة توضيحية 3">
+                    <!-- النص التوجيهي الجديد -->
+                    <div class="click-to-enlarge-text">
+                        اضغط هنا لتكبير الصورة
+                    </div>
+                </div>
+                <!-- الخط الفاصل بين الصورة والشرح داخل البطاقة -->
+                <div class="separator-line"></div>
+                <div class="text-content">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-green-700 mb-4"> المحادثات المحفوضه </h2>
+                    <p class="text-base sm:text-lg text-gray-700 leading-relaxed">
+                        محادثتك بتضهر هنا بين محادثات الآخرين المحفوضه يمكنك تسمية محادثاتك لاجل اذا عاودت الرجوع عليها يمكنك البحث عليها با الاسم بشكل اسرع .
+                    </p>
+                </div>
+            </div>
+
+            <!-- الشرح كمنتج 4 -->
+            <div class="image-description-card">
+                <div class="image-wrapper">
+                    <img src="sabb4.png" alt="صورة توضيحية 4">
+                    <!-- النص التوجيهي الجديد -->
+                    <div class="click-to-enlarge-text">
+                        اضغط هنا لتكبير الصورة
+                    </div>
+                </div>
+                <!-- الخط الفاصل بين الصورة والشرح داخل البطاقة -->
+                <div class="separator-line"></div>
+                <div class="text-content">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-yellow-700 mb-4">ادوات متقدمه</h2>
+                    <p class="text-base sm:text-lg text-gray-700 leading-relaxed">
+                        Deep research البحث العميق
+                       Create image الوصف: أداة لتوليد صور باستخدام الذكاء الاصطناعي بناءً على الوصف النصي
+                       Web search البحث المباشر على الانترنت
+                       .
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Section: ChatGPT Plus Features -->
+    <div class="features-section">
+        <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-8">
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-teal-500">
+                مميزات ChatGPT Plus
+            </span>
+        </h2>
+        <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-12">
+            استفد من أقصى إمكانيات الذكاء الاصطناعي مع اشتراك ChatGPT Plus، الذي يقدم لك تجربة متفوقة وميزات حصرية.
+        </p>
+
+        <div class="features-grid">
+            <!-- Feature Card 1 -->
+            <div class="feature-card">
+                <div class="feature-icon">✨</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">وصول دائم</h3>
+                <p class="text-base text-gray-600">
+                    استمتع بالوصول إلى ChatGPT حتى خلال أوقات الذروة، لضمان استمرارية عملك وإبداعك.
+                </p>
+            </div>
+
+            <!-- Feature Card 2 -->
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">سرعة استجابة فائقة</h3>
+                <p class="text-base text-gray-600">
+                    احصل على استجابات أسرع بكثير من النموذج المجاني، مما يوفر لك الوقت ويزيد من إنتاجيتك.
+                </p>
+            </div>
+
+            <!-- Feature Card 3 -->
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">أولوية الوصول للميزات الجديدة</h3>
+                <p class="text-base text-gray-600">
+                    كن أول من يجرب الميزات والتحسينات الجديدة، بما في ذلك نماذج GPT-4 المتقدمة.
+                </p>
+            </div>
+
+            <!-- Feature Card 4 -->
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">تصفح الويب</h3>
+                <p class="text-base text-gray-600">
+                    قدرة على البحث عن معلومات حديثة عبر الإنترنت، مما يمنحك إجابات دقيقة ومحدثة.
+                </p>
+            </div>
+
+            <!-- Feature Card 5 -->
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">تحليل البيانات المتقدم</h3>
+                <p class="text-base text-gray-600">
+                    استخدم قدرات تحليل البيانات لفهم الرسوم البيانية والجداول المعقدة وإنشاء رؤى.
+                </p>
+            </div>
+
+            <!-- Feature Card 6 -->
+            <div class="feature-card">
+                <div class="feature-icon">🔌</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">الوصول إلى المكونات الإضافية (Plugins)</h3>
+                <p class="text-base text-gray-600">
+                    قم بتوسيع قدرات ChatGPT عن طريق دمج أدوات وتطبيقات خارجية متنوعة.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Section: Store Footer - Matching the provided image -->
+    <footer class="footer-section">
+        <h2 class="footer-heading">تواصل معنا</h2>
+        <div class="contact-info-footer">
+            <a href="tel:+967782343232" class="contact-item-footer">
+                <!-- Phone Icon (SVG) -->
+                <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.02.75-.25 1.02L6.62 10.79z"/>
+                </svg>
+                232 343 782 967+
+            </a>
+            <a href="mailto:info@takhfidatsaber.com" class="contact-item-footer">
+                <!-- Email Icon (SVG) -->
+                <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+                info@takhfidatsaber.com
+            </a>
+            <a href="https://www.facebook.com/share/16sYa5DTda/?mibextid=qi2Omg" target="_blank" class="contact-item-footer">
+                <!-- Facebook Icon (Image) -->
+                <img src="https://placehold.co/24x24/1877F2/ffffff?text=FB" alt="Facebook Icon" class="icon-img" onerror="this.onerror=null;this.src='https://placehold.co/24x24/cccccc/000000?text=Icon';">
+                صفحتنا على فيسبوك
+            </a>
+        </div>
+        <p class="copyright-text-footer">
+            &copy; 2025 متجر تخفيضات صابر. جميع الحقوق محفوظة.
+        </p>
+    </footer>
+
+    <!-- WhatsApp Floating Button (Image Icon from sabb5.png) -->
+    <a href="https://wa.me/967782343232" class="whatsapp-button" target="_blank">
+        <img src="sabb5.png" alt="WhatsApp Icon" onerror="this.onerror=null;this.src='https://placehold.co/32x32/cccccc/000000?text=WA';">
+    </a>
+
+    <!-- Fullscreen Image Overlay -->
+    <div class="fullscreen-overlay" id="fullscreenOverlay">
+        <button class="close-button" id="closeFullscreen">&times;</button>
+        <img src="" alt="Full Screen Image" id="fullscreenImage">
+    </div>
+
+    <script>
+        // Get all image elements
+        const images = document.querySelectorAll('.image-description-card img');
+        // Get the fullscreen overlay and its image and close button
+        const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+        const fullscreenImage = document.getElementById('fullscreenImage');
+        const closeFullscreenButton = document.getElementById('closeFullscreen');
+
+        let startY = 0; // To store the initial Y position of touch
+        const swipeThreshold = 50; // Minimum vertical distance for a swipe to be registered
+
+        // Function to close the fullscreen overlay
+        function closeFullscreen() {
+            fullscreenOverlay.classList.remove('active');
+            // Reset the image position in case it was moved during swipe attempt
+            fullscreenImage.style.transform = 'translateY(0)';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Add click event listener to each image to open fullscreen
+        images.forEach(image => {
+            image.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent card's own click listener if any
+                fullscreenImage.src = image.src; // Set the source of the fullscreen image
+                fullscreenOverlay.classList.add('active'); // Show the overlay
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            });
+        });
+
+        // Add click event listener to the close button
+        closeFullscreenButton.addEventListener('click', closeFullscreen);
+
+        // Add click event listener to the fullscreen image itself to close it
+        fullscreenImage.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent the overlay's click listener from firing
+            closeFullscreen();
+        });
+
+        // Add touch event listeners for swipe functionality on the overlay
+        fullscreenOverlay.addEventListener('touchstart', (event) => {
+            // Record the initial Y position of the first touch point
+            startY = event.touches[0].pageY;
+            // Reset image transform for a new swipe gesture
+            fullscreenImage.style.transition = 'none'; // Disable transition during active swipe
+        });
+
+        fullscreenOverlay.addEventListener('touchmove', (event) => {
+            // Calculate the vertical distance moved
+            const currentY = event.touches[0].pageY;
+            const deltaY = currentY - startY;
+            // Move the image vertically as the user swipes
+            fullscreenImage.style.transform = `translateY(${deltaY}px)`;
+        });
+
+        fullscreenOverlay.addEventListener('touchend', (event) => {
+            // Re-enable transition for smooth return or close
+            fullscreenImage.style.transition = 'transform 0.3s ease-out';
+
+            // Calculate the final vertical distance moved
+            const endY = event.changedTouches[0].pageY;
+            const deltaY = endY - startY;
+
+            // If the swipe distance exceeds the threshold, close the overlay
+            if (Math.abs(deltaY) > swipeThreshold) {
+                closeFullscreen();
+            } else {
+                // If swipe was not enough, return the image to its original position
+                fullscreenImage.style.transform = 'translateY(0)';
+            }
+        });
+
+        // Add click event listener to the overlay itself to close it (if not clicking the image or close button)
+        fullscreenOverlay.addEventListener('click', (event) => {
+            // Only close if the click is directly on the overlay, not on the image or close button
+            if (event.target === fullscreenOverlay) {
+                closeFullscreen();
+            }
+        });
+
+        // Optional: Close on Escape key press
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && fullscreenOverlay.classList.contains('active')) {
+                closeFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>
