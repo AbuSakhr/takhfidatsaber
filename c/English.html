@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعلم الإنجليزية ببساطة بأقل فترة</title>
+    <!-- تحميل Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تحميل خطوط Google Fonts: Cairo للعربية و Inter للإنجليزية (لضمان التوافق) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- إضافة Font Awesome لضمان ظهور أيقونات (إذا كانت مستخدمة) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* تعريف المتغيرات (يمكن إزالتها إذا لم تعد تستخدم في أي مكان آخر) */
+        :root {
+            --primary-500: #3b82f6; --primary-600: #2563eb;
+            --secondary-500: #10b981; --secondary-600: #059669;
+            --bg-light: #f8fafc; --bg-dark: #0f172a;
+            --text-dark: #0f172a; --text-light: #475569;
+        }
+
+        html, body {
+            height: 100%; /* ضمان أن html و body يملآن الارتفاع بالكامل */
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif; /* استخدام خط عربي جميل */
+            background: linear-gradient(to bottom right, #e0f7fa, #e8f5e9); /* تدرج لوني للخلفية (أزرق فاتح وأخضر فاتح) */
+            min-height: 100vh; /* تأكد من أن الجسم يملأ ارتفاع الشاشة */
+            display: flex;
+            flex-direction: column; /* لجعل المحتوى يتراصف عمودياً */
+            align-items: center;
+            justify-content: flex-start; /* البدء من الأعلى */
+            padding: 0; /* إزالة أي حشوة افتراضية */
+            margin: 0; /* إزالة أي هوامش افتراضية */
+            overflow-x: hidden; /* منع التمرير الأفقي */
+            /* ضبط padding-top ليتناسب مع ارتفاع شريط العنوان الثابت */
+            padding-top: 4rem; /* ارتفاع تقريبي لشريط العنوان */
+        }
+
+        /* أنماط العنوان الجديد كشريط علوي صغير */
+        .page-title {
+            font-size: 1.75rem; /* حجم أكبر للعنوان */
+            font-weight: 800; /* خط سميك جداً */
+            color: #3b82f6; /* لون أزرق جذاب */
+            text-align: center;
+            padding: 0.75rem 1rem; /* حشوة أكبر للشريط */
+            background: linear-gradient(to right, #3b82f6, #6366f1); /* تدرج لوني للنص */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2; /* تباعد أسطر مناسب */
+            flex-shrink: 0; /* منع العنوان من الانكماش */
+            width: 100%; /* لجعل الخلفية المتدرجة تمتد على العرض بالكامل */
+            background-color: #ffffff; /* خلفية بيضاء للشريط العلوي */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* ظل أقوى وجميل */
+            position: fixed; /* تثبيت الشريط في الأعلى */
+            top: 0;
+            left: 0;
+            z-index: 1000; /* لضمان ظهوره فوق المحتوى */
+        }
+
+        /* أنماط واجهة الدردشة */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            width: 95%; /* عرض أكبر لملء الشاشة */
+            max-width: 1000px; /* عرض الدردشة الأقصى */
+            flex-grow: 1; /* يجعل الدردشة تملأ المساحة المتبقية عمودياً */
+            margin: 1.5rem auto 1.5rem auto; /* مسافة علوية وسفلية، auto للتوسيط الأفقي */
+            background-color: #ffffff;
+            border-radius: 2.5rem; /* حواف مستديرة جداً */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); /* ظل أقوى وأكثر جمالاً */
+            overflow: hidden; /* لإخفاء أي محتوى زائد */
+            direction: ltr; /* الدردشة بالإنجليزية، لذا الاتجاه من اليسار لليمين */
+            border: 1px solid #e0e0e0; /* حدود خفيفة */
+        }
+
+        .chat-history {
+            flex-grow: 1;
+            padding: 2.5rem; /* حشوة أكبر */
+            overflow-y: auto; /* تمكين التمرير العمودي */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* مسافة أكبر بين الرسائل */
+            scroll-behavior: smooth; /* تمرير سلس */
+            background-color: #fcfdff; /* خلفية فاتحة جداً للدردشة */
+        }
+
+        /* تخصيص شريط التمرير (Webkit browsers) */
+        .chat-history::-webkit-scrollbar {
+            width: 10px;
+        }
+        .chat-history::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+        .chat-history::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #a78bfa, #8b5cf6); /* تدرج بنفسجي جذاب */
+            border-radius: 10px;
+            border: 2px solid #f0f0f0; /* حدود لجعل الإبهام يبدو منفصلاً */
+        }
+        .chat-history::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #8b5cf6, #6d28d9);
+        }
+
+
+        .chat-message {
+            max-width: 80%; /* عرض أكبر للرسائل */
+            padding: 1.25rem 1.5rem; /* حشوة أكبر */
+            border-radius: 1.75rem; /* حواف مستديرة أكثر */
+            line-height: 1.7; /* تباعد أسطر مريح */
+            word-wrap: break-word; /* لكسر الكلمات الطويلة */
+            font-size: 1.1rem; /* حجم خط مناسب */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* ظل خفيف للفقاعات */
+            position: relative; /* لتمكين وضع الأزرار داخله بشكل مطلق */
+            animation: fadeIn 0.3s ease-out; /* تأثير ظهور لطيف */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: linear-gradient(to right, #e3f2fd, #bbdefb); /* أزرق فاتح وجميل لرسائل المستخدم */
+            color: #1e88e5; /* أزرق داكن للنص */
+            align-self: flex-end; /* محاذاة لليمين */
+            border-bottom-right-radius: 0.75rem; /* حافة مربعة قليلاً لأسفل اليمين */
+        }
+
+        .ai-message {
+            background: linear-gradient(to left, #e8f5e9, #c8e6c9); /* أخضر فاتح وجميل لرسائل الذكاء الاصطناعي */
+            color: #388e3c; /* أخضر داكن للنص */
+            align-self: flex-start; /* محاذاة لليسار */
+            padding-top: 45px; /* مساحة إضافية للأزرار في الأعلى */
+        }
+
+        /* أنماط خاصة للشرح المنظم */
+        .ai-message .structured-translation {
+            display: block; /* لجعلها تأخذ سطرًا كاملاً */
+            background-color: #f0f8ff; /* لون خلفية أفتح للشرح */
+            border-left: 6px solid #00bcd4; /* خط جانبي أزرق سماوي أكثر سمكاً */
+            padding: 1.25rem 1.5rem; /* حشوة أكبر */
+            margin-top: 1.25rem; /* مسافة علوية أكبر */
+            border-radius: 1rem; /* حواف مستديرة أكثر */
+            font-size: 1.05rem; /* حجم خط مناسب */
+            line-height: 1.8; /* تباعد أسطر مريح */
+            direction: rtl; /* لجعل الشرح العربي من اليمين لليسار */
+            text-align: right; /* محاذاة النص لليمين */
+            font-family: 'Cairo', sans-serif; /* التأكد من استخدام خط عربي */
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.08); /* ظل داخلي خفيف */
+            border: 1px solid #e0f2f7; /* حدود خفيفة */
+        }
+
+        .ai-message .structured-translation .arabic-original {
+            font-weight: bold;
+            color: #3f51b5; /* لون أزرق للكلمة العربية الأصلية */
+            display: inline-block;
+            margin-left: 0.75rem; /* مسافة بين العربي والإنجليزي */
+        }
+        .ai-message .structured-translation .english-part {
+            font-weight: bold;
+            color: #1e88e5; /* لون أزرق للكلمة الإنجليزية */
+            direction: ltr; /* للتأكد من أن الكلمة الإنجليزية تبدأ من اليسار */
+            display: inline-block;
+            margin-left: 0.75rem; /* مسافة بين الإنجليزي والنطق */
+        }
+        .ai-message .structured-translation .arabic-pronunciation {
+            color: #6a1b9a; /* لون بنفسجي للنطق */
+            direction: rtl; /* للتأكد من أن النطق العربي يبدأ من اليمين */
+            display: inline-block;
+            margin-left: 0.75rem; /* مسافة بين النطق والمعنى */
+        }
+        .ai-message .structured-translation .equals-sign {
+            color: #333; /* لون لعلامة التساوي */
+            font-weight: bold;
+            margin: 0 0.4rem; /* مسافة حول علامة التساوي */
+        }
+        .ai-message .structured-translation .arabic-meaning {
+            color: #d84315; /* لون برتقالي للمعنى العربي */
+            direction: rtl; /* للتأكد من أن المعنى العربي يبدأ من اليمين */
+            display: inline-block;
+        }
+
+        /* أنماط الأزرار الجديدة (نسخ وصوت) - تم تعديلها لتكون أفقية في الأعلى */
+        .message-actions {
+            position: absolute;
+            top: 10px; /* ضبط الموضع العلوي */
+            right: 12px; /* محاذاة لليمين */
+            display: flex;
+            flex-direction: row; /* ترتيب الأزرار أفقياً */
+            gap: 10px; /* المسافة بين الأزرار */
+            z-index: 10;
+        }
+
+        .copy-btn, .speech-btn {
+            background-color: rgba(255, 255, 255, 0.9); /* خلفية بيضاء شفافة قليلاً */
+            border: 1px solid #e0e0e0; /* حدود رمادية فاتحة */
+            border-radius: 50%; /* أزرار دائرية */
+            width: 35px; /* حجم صغير */
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.85rem; /* حجم الأيقونة */
+            color: #6b7280; /* لون الأيقونة رمادي */
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1); /* ظل خفيف */
+        }
+
+        .copy-btn:hover, .speech-btn:hover {
+            background-color: #f0f0f0; /* لون أفتح عند التحويم */
+            color: #374151; /* لون أغمق للأيقونة عند التحويم */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .copy-feedback {
+            position: absolute;
+            top: 45px; /* وضعها أسفل الأزرار مباشرة */
+            right: 12px; /* محاذاة لليمين مع الأزرار */
+            background-color: #10b981; /* لون أخضر (Tailwind green-500) */
+            color: white;
+            padding: 6px 12px;
+            border-radius: 0.75rem; /* حواف مستديرة */
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            white-space: nowrap; /* منع التفاف النص */
+            pointer-events: none; /* جعلها غير قابلة للنقر */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 1.75rem; /* حشوة أكبر */
+            border-top: 1px solid #e2e8f0;
+            background-color: #f8fafc; /* خلفية فاتحة */
+            box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.05); /* ظل علوي خفيف */
+        }
+
+        .chat-input-area textarea {
+            flex-grow: 1;
+            padding: 1.1rem 1.5rem; /* حشوة أكبر */
+            border: 2px solid #cbd5e0; /* حدود أكثر وضوحاً */
+            border-radius: 2.5rem; /* حواف مستديرة جداً */
+            font-size: 1.1rem; /* حجم خط مناسب */
+            resize: none; /* منع تغيير حجم مربع النص يدوياً */
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            min-height: 60px; /* ارتفاع أولي ثابت أكبر */
+            overflow-y: hidden; /* إخفاء شريط التمرير حتى يتجاوز الارتفاع */
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08); /* ظل داخلي خفيف */
+            font-family: 'Inter', sans-serif; /* خط Inter لمربع النص */
+            color: #333;
+        }
+
+        .chat-input-area textarea:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.4); /* ظل أقوى عند التركيز */
+        }
+
+        .chat-input-area button {
+            background: linear-gradient(to right, #6366f1, #8b5cf6); /* تدرج لوني جميل */
+            color: white;
+            border: none;
+            border-radius: 2.5rem; /* حواف مستديرة جداً */
+            padding: 1.1rem 2rem; /* حشوة أكبر */
+            margin-left: 1.5rem; /* مسافة أكبر */
+            font-size: 1.15rem; /* حجم خط أكبر */
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* ظل أقوى */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.85rem; /* مسافة أكبر للأيقونة */
+            font-family: 'Cairo', sans-serif; /* خط القاهرة للزر */
+        }
+
+        .chat-input-area button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #4f46e5, #7c3aed); /* تدرج أغمق عند التحويم */
+        }
+
+        .loading-chat-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            color: #6366f1;
+            font-weight: 600;
+            margin-top: 0.75rem;
+            align-self: flex-start; /* محاذاة لليسار */
+            font-size: 1.05rem;
+            animation: pulse 1.5s infinite ease-in-out; /* تأثير نبض للتحميل */
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .loading-chat-indicator svg {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.25rem; /* حجم أصغر للعنوان على الجوال */
+                padding: 0.5rem 0.75rem;
+                padding-top: 0.75rem; /* حشوة علوية أصغر */
+                padding-bottom: 0.5rem; /* حشوة سفلية أصغر */
+            }
+            body {
+                padding-top: 3.5rem; /* تعديل padding-top للجوال */
+            }
+            .chat-container {
+                width: 98%; /* عرض أكبر على الجوال */
+                margin: 0.75rem auto;
+                border-radius: 1.5rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            }
+            .chat-history {
+                padding: 1.25rem;
+                gap: 1rem;
+            }
+            .chat-message {
+                padding: 0.9rem 1.1rem;
+                font-size: 0.95rem;
+                border-radius: 1.25rem;
+            }
+            .ai-message {
+                padding-top: 38px; /* مساحة أقل للأزرار على الجوال */
+            }
+            .message-actions {
+                top: 8px;
+                right: 8px;
+                gap: 6px;
+            }
+            .copy-btn, .speech-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+            .ai-message .structured-translation {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+                border-radius: 0.8rem;
+            }
+            .chat-input-area {
+                padding: 1rem;
+            }
+            .chat-input-area textarea {
+                font-size: 1rem;
+                min-height: 48px;
+                padding: 0.8rem 1rem;
+                border-radius: 2rem;
+            }
+            .chat-input-area button {
+                padding: 0.8rem 1.25rem;
+                font-size: 1rem;
+                margin-left: 1rem;
+            }
+            .copy-feedback {
+                top: 40px; /* تعديل الموضع على الجوال */
+                font-size: 0.7rem;
+                padding: 4px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- العنوان الجديد في الأعلى -->
+    <h1 class="page-title">تعلم الإنجليزية ببساطة بأقل فترة</h1>
+
+    <!-- واجهة الدردشة لتعليم اللغة الإنجليزية -->
+    <div class="chat-container">
+        <div class="chat-history" id="chatHistory">
+            <!-- رسائل الدردشة ستظهر هنا -->
+        </div>
+        <div class="chat-input-area">
+            <textarea id="userMessageInput" placeholder="اكتب رسالتك بالإنجليزية أو العربية..." rows="1"></textarea>
+            <button id="sendMessageBtn">
+                <i class="fas fa-paper-plane"></i> إرسال
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatHistoryDiv = document.getElementById('chatHistory');
+        const userMessageInput = document.getElementById('userMessageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+        // سجل الدردشة الأولي فارغ الآن.
+        let chatHistory = [];
+
+        // دالة لإضافة رسالة إلى عرض الدردشة
+        function addMessageToChat(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message', `${sender}-message`);
+
+            if (sender === 'ai') {
+                // حاوية لمحتوى الرسالة النصي
+                const messageContentDiv = document.createElement('div');
+                messageContentDiv.classList.add('message-content');
+                messageContentDiv.innerHTML = message; // استجابة الذكاء الاصطناعي بتنسيق HTML
+
+                // حاوية لأزرار الإجراءات (نسخ، صوت)
+                const messageActionsDiv = document.createElement('div');
+                messageActionsDiv.classList.add('message-actions');
+
+                // زر النسخ
+                const copyBtn = document.createElement('button');
+                copyBtn.classList.add('copy-btn');
+                copyBtn.title = 'نسخ';
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                
+                // رسالة تأكيد النسخ
+                const copyFeedbackSpan = document.createElement('span');
+                copyFeedbackSpan.classList.add('copy-feedback');
+
+                copyBtn.addEventListener('click', () => {
+                    // استخراج النص العربي من الرد المنظم للنسخ
+                    const structuredDiv = messageContentDiv.querySelector('.structured-translation');
+                    let textToCopy = '';
+                    if (structuredDiv) {
+                        const originalArabic = structuredDiv.querySelector('.arabic-original')?.textContent || '';
+                        const englishPart = structuredDiv.querySelector('.english-part')?.textContent || '';
+                        const arabicPronunciation = structuredDiv.querySelector('.arabic-pronunciation')?.textContent || '';
+                        const arabicMeaning = structuredDiv.querySelector('.arabic-meaning')?.textContent || '';
+
+                        // تنسيق النص للنسخ
+                        textToCopy = `${originalArabic} ${englishPart} (${arabicPronunciation}) = ${arabicMeaning}`;
+                    } else {
+                        // في حالة عدم العثور على التنسيق المنظم، نسخ النص بأكمله
+                        textToCopy = messageContentDiv.innerText;
+                    }
+
+                    // استخدام textarea مؤقت للنسخ إلى الحافظة
+                    const tempTextArea = document.createElement('textarea');
+                    tempTextArea.value = textToCopy;
+                    document.body.appendChild(tempTextArea);
+                    tempTextArea.select();
+                    try {
+                        document.execCommand('copy');
+                        copyFeedbackSpan.textContent = 'تم النسخ!';
+                        copyFeedbackSpan.style.opacity = '1';
+                        setTimeout(() => {
+                            copyFeedbackSpan.style.opacity = '0';
+                        }, 1500);
+                    } catch (err) {
+                        console.error('فشل في نسخ النص: ', err);
+                    } finally {
+                        document.body.removeChild(tempTextArea);
+                    }
+                });
+
+                // زر تشغيل الصوت
+                const speechBtn = document.createElement('button');
+                speechBtn.classList.add('speech-btn');
+                speechBtn.title = 'استماع';
+                speechBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+
+                speechBtn.addEventListener('click', () => {
+                    const structuredDiv = messageContentDiv.querySelector('.structured-translation');
+                    let textToSpeak = '';
+                    if (structuredDiv) {
+                        const englishPart = structuredDiv.querySelector('.english-part')?.textContent || '';
+                        textToSpeak = englishPart; // نطق الجزء الإنجليزي فقط
+                    } else {
+                        textToSpeak = messageContentDiv.innerText; // في حالة عدم العثور على التنسيق المنظم
+                    }
+
+                    if (textToSpeak) {
+                        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                        utterance.lang = 'en-US'; // تعيين اللغة إلى الإنجليزية الأمريكية
+
+                        // محاولة العثور على صوت إنجليزي
+                        const voices = window.speechSynthesis.getVoices();
+                        let selectedVoice = null;
+                        for (const voice of voices) {
+                            if (voice.lang.startsWith('en') && (voice.name.includes('male') || voice.name.includes('Female') || voice.name.includes('English (United States)'))) {
+                                selectedVoice = voice;
+                                break;
+                            }
+                        }
+
+                        if (selectedVoice) {
+                            utterance.voice = selectedVoice;
+                        } else {
+                            // العودة إلى أي صوت إنجليزي إذا لم يتم العثور على صوت محدد
+                            const anyEnglishVoice = voices.find(voice => voice.lang.startsWith('en'));
+                            if (anyEnglishVoice) {
+                                utterance.voice = anyEnglishVoice;
+                            }
+                        }
+
+                        window.speechSynthesis.speak(utterance);
+                    }
+                });
+
+                messageActionsDiv.appendChild(copyBtn);
+                messageActionsDiv.appendChild(speechBtn);
+
+                messageDiv.appendChild(messageActionsDiv); // إضافة الأزرار أولاً
+                messageDiv.appendChild(messageContentDiv);
+                messageDiv.appendChild(copyFeedbackSpan); // إضافة رسالة التأكيد إلى الرسالة الرئيسية
+            } else {
+                messageDiv.innerHTML = message;
+            }
+
+            chatHistoryDiv.appendChild(messageDiv);
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // التمرير إلى الأسفل
+        }
+
+        // دالة لإظهار/إخفاء مؤشر التحميل
+        function toggleLoading(show) {
+            if (show) {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = 'loadingChatIndicator';
+                loadingDiv.classList.add('loading-chat-indicator', 'ai-message');
+                loadingDiv.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>يكتب...</span>
+                `;
+                chatHistoryDiv.appendChild(loadingDiv);
+                chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+            } else {
+                const loadingDiv = document.getElementById('loadingChatIndicator');
+                if (loadingDiv) {
+                    loadingDiv.remove();
+                }
+            }
+        }
+
+        // دالة لإرسال الرسالة والحصول على الاستجابة من Gemini
+        async function sendMessage() {
+            const userMessage = userMessageInput.value.trim();
+            if (!userMessage) return;
+
+            addMessageToChat(userMessage, 'user');
+            chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+            userMessageInput.value = ''; // مسح حقل الإدخال
+            userMessageInput.style.height = 'auto'; // إعادة تعيين ارتفاع مربع النص
+
+            toggleLoading(true); // إظهار مؤشر التحميل
+
+            try {
+                // موجه النظام لتعريف دور الذكاء الاصطناعي كمدرس للغة الإنجليزية بتنسيق ترجمة محدد جداً
+                const systemPrompt = {
+                    role: "user",
+                    parts: [{ text: `أنت مدرس للغة الإنجليزية. هدفك هو مساعدة المستخدمين على ممارسة وتحسين لغتهم الإنجليزية.
+يجب أن تكون استجابتك بالكامل دائمًا فقط هي الترجمة المنظمة بتنسيق HTML <div>. لا تضف أي نص حواري آخر أو تفسيرات أو أمثلة قبل أو بعد هذا <div>.
+يجب أن يكون التنسيق:
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">[العبارة العربية الأصلية]</span>    <span class="english-part">[الترجمة الإنجليزية]</span>    (<span class="arabic-pronunciation">[النطق الصوتي العربي للإنجليزية]</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">[المعنى العربي]</span>
+</div>
+إذا كتب المستخدم باللغة العربية، فقدم الأصل العربي، وترجمته الإنجليزية، والنطق الصوتي، والمعنى العربي.
+إذا كتب المستخدم باللغة الإنجليزية، فقدم الترجمة العربية لعبارته الإنجليزية، والعبارة الإنجليزية نفسها، ونطقها الصوتي، والمعنى العربي.
+مثال على الإخراج المطلوب للغة العربية "انا ذاهب":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">انا ذاهب</span>    <span class="english-part">I'm going</span>    (<span class="arabic-pronunciation">ايم جوه-ينج</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">أنا ذاهب</span>
+</div>
+مثال على الإخراج المطلوب للغة الإنجليزية "Hello":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">مرحبا</span>    <span class="english-part">Hello</span>    (<span class="arabic-pronunciation">هالو</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">أهلاً</span>
+</div>
+مثال على الإخراج المطلوب للغة العربية "لا تدخن":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">لا تدخن</span>    <span class="english-part">Don't smoke</span>    (<span class="arabic-pronunciation">دونت سموك</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">لا تدخن</span>
+</div>
+تأكد من أن النطق الصوتي العربي هو حروف عربية مبسطة، وليس رموز IPA.
+تأكد من أن هيكل HTML صالح ومنسق جيدًا.
+` }]
+                };
+
+                // دمج موجه النظام مع سجل الدردشة لاستدعاء API
+                const payload = {
+                    contents: [systemPrompt, ...chatHistory]
+                };
+
+                const apiKey = "AIzaSyCAtLdN4wO55U9OE-HATmq20tfi5f1TQvw"; // تم إضافة مفتاح API الخاص بك هنا
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const aiResponse = result.candidates[0].content.parts[0].text;
+                    addMessageToChat(aiResponse, 'ai');
+                    chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
+                } else {
+                    addMessageToChat("عذرًا، لم أتمكن من معالجة ذلك. يرجى المحاولة مرة أخرى.", 'ai');
+                }
+            } catch (error) {
+                console.error('خطأ في استدعاء Gemini API:', error);
+                addMessageToChat("حدث خطأ. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.", 'ai');
+            } finally {
+                toggleLoading(false); // إخفاء مؤشر التحميل
+            }
+        }
+
+        // مستمعو الأحداث لإرسال الرسائل
+        sendMessageBtn.addEventListener('click', sendMessage);
+        userMessageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { // إرسال عند الضغط على Enter، والسماح بـ Shift+Enter لسطر جديد
+                e.preventDefault(); // منع سطر جديد
+                sendMessage();
+            }
+        });
+
+        // ضبط ارتفاع مربع النص ديناميكياً
+        userMessageInput.addEventListener('input', () => {
+            userMessageInput.style.height = 'auto';
+            userMessageInput.style.height = userMessageInput.scrollHeight + 'px';
+        });
+
+        // تحسين نطق الصوت:
+        // تم تعديل زر تشغيل الصوت لينطق الجزء الإنجليزي فقط
+        // تم تعديل لغة النطق إلى 'en-US'
+        // تم تحسين البحث عن صوت إنجليزي مناسب (ذكر/أنثى)
+    </script>
+</body>
+</html>
