@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+                            devMessageDiv.remove(); // Remove from DOM after fade out
+                            currentDeveloperMessageElement = null;
+                        }
+                    }, 500); // Wait for fade out transition (0.5s)
+                }
+            }, 5 * 1000); // 5 seconds
+        }
+
+        /**
+         * Sends the user's message to the Gemini API and handles the response.
+         */
+        async function sendMessage() {
+            const userMessage = userMessageInput.value.trim();
+            if (!userMessage) return;
+
+            addMessageToChat(userMessage, 'user');
+            chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+            userMessageInput.value = ''; // Clear the input field
+            userMessageInput.style.height = 'auto'; // Reset textarea height
+
+            toggleLoading(true); // Show loading indicator
+
+            try {
+                // System prompt to define the AI's role as an English language tutor with a very specific translation format
+                const systemPrompt = {
+                    role: "user",
+                    parts: [{ text: `أنت مدرس للغة الإنجليزية. هدفك هو مساعدة المستخدمين على ممارسة وتحسين لغتهم الإنجليزية.
+يجب أن تكون استجابتك بالكامل دائمًا فقط هي الترجمة المنظمة بتنسيق HTML <div>. لا تضف أي نص حواري آخر أو تفسيرات أو أمثلة قبل أو بعد هذا <div>.
+يجب أن يكون التنسيق:
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">[العبارة العربية الأصلية]</span><span class="english-part">[الترجمة الإنجليزية]</span>(<span class="arabic-pronunciation">[النطق الصوتي العربي للإنجليزية]</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">[المعنى العربي]</span>
+</div>
+إذا كتب المستخدم باللغة العربية، فقدم الأصل العربي، وترجمته الإنجليزية، والنطق الصوتي، والمعنى العربي.
+إذا كتب المستخدم باللغة الإنجليزية، فقدم الترجمة العربية لعبارته الإنجليزية، والعبارة الإنجليزية نفسها، ونطقها الصوتي، والمعنى العربي.
+مثال على الإخراج المطلوب للغة العربية "انا ذاهب":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">انا ذاهب</span><span class="english-part">I'm going</span>(<span class="arabic-pronunciation">ايم جوه-ينج</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">أنا ذاهب</span>
+</div>
+مثال على الإخراج المطلوب للغة الإنجليزية "Hello":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">مرحبا</span><span class="english-part">Hello</span>(<span class="arabic-pronunciation">هالو</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">أهلاً</span>
+</div>
+مثال على الإخراج المطلوب للغة العربية "لا تدخن":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">لا تدخن</span><span class="english-part">Don't smoke</span>(<span class="arabic-pronunciation">دونت سموك</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">لا تدخن</span>
+</div>
+تأكد من أن النطق الصوتي العربي هو حروف عربية مبسطة، وليس رموز IPA.
+تأكد من أن هيكل HTML صالح ومنسق جيدًا.
+` }]
+                };
+
+                // Merge system prompt with chat history for API call
+                const payload = {
+                    contents: [systemPrompt, ...chatHistory]
+                };
+
+                // API key is provided here
+                const apiKey = "AIzaSyCAtLdN4wO55U9OE-HATmq20tfi5f1TQvw";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const aiResponse = result.candidates[0].content.parts[0].text;
+                    addMessageToChat(aiResponse, 'ai');
+                    chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
+                } else {
+                    addMessageToChat("عذرًا، لم أتمكن من معالجة ذلك. يرجى المحاولة مرة أخرى.", 'ai');
+                }
+            } catch (error) {
+                console.error('خطأ في استدعاء Gemini API:', error);
+                addMessageToChat("حدث خطأ. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.", 'ai');
+            } finally {
+                toggleLoading(false); // Hide loading indicator
+            }
+        }
+
+        // Event listeners for sending messages
+        sendMessageBtn.addEventListener('click', sendMessage);
+        userMessageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { // Send on Enter, allow Shift+Enter for new line
+                e.preventDefault(); // Prevent new line
+                sendMessage();
+            }
+        });
+
+        // Dynamically adjust textarea height
+        userMessageInput.addEventListener('input', () => {
+            userMessageInput.style.height = 'auto';
+            userMessageInput.style.height = userMessageInput.scrollHeight + 'px';
+        });
+
+        // Start showing the developer message periodically
+        window.onload = () => {
+            showDeveloperMessage(); // Show immediately on load
+            developerMessageIntervalId = setInterval(showDeveloperMessage, 65 * 1000); // Repeat every 65 seconds
+        };
+    </script>
+</body>
+</html>
