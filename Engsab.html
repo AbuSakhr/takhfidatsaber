@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* CSS العام والخاص بواجهة التفعيل */
+        /* CSS العام والمتجاوب لملء الشاشة */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
@@ -17,27 +17,29 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* تأكد من أن الـ body يغطي الشاشة بالكامل */
-            overflow: hidden; /* لمنع ظهور شريط التمرير إذا كان هناك محتوى زائد عن الحاجة */
+            min-height: 100vh; /* يضمن أن الـ body يغطي كامل ارتفاع الشاشة */
+            width: 100vw; /* يضمن أن الـ body يغطي كامل عرض الشاشة */
+            overflow: hidden; /* منع التمرير على مستوى Body لمنع ظهور أشرطة التمرير المزدوجة */
         }
         
         /* الأقسام الرئيسية للتطبيق، قسم التفعيل وقسم المدرس */
         .app-section {
             display: none; /* يتم إخفاء جميع أقسام التطبيق افتراضياً */
-            width: 100%;
-            height: 100%;
+            width: 100vw; /* يغطي كامل عرض الشاشة */
+            height: 100vh; /* يغطي كامل ارتفاع الشاشة */
             justify-content: center; /* لتوسيط المحتوى داخل القسم */
             align-items: center; /* لتوسيط المحتوى داخل القسم */
             opacity: 0; /* لتأثير التلاشي */
             transition: opacity 0.5s ease-in-out; /* تأثير التلاشي */
-            position: absolute; /* لجعل الأقسام تتداخل فوق بعضها البعض وتسمح بالتبديل السلس */
+            position: fixed; /* يبقى ثابتًا في مكانه ويغطي الشاشة بالكامل */
             top: 0;
             left: 0;
+            z-index: 1; /* ترتيب الظهور */
         }
         .app-section.active {
             display: flex; /* إظهار القسم النشط */
             opacity: 1; /* لجعلها مرئية */
-            position: relative; /* لتمكين وضع العناصر الفرعية ضمن تدفق المستند الطبيعي */
+            z-index: 2; /* تأكد من ظهورها فوق الأقسام غير النشطة */
         }
         
         /* أنماط واجهة التفعيل */
@@ -45,7 +47,6 @@
             background-image: linear-gradient(to bottom right, #e3f2fd, #bbdefb); /* تدرج لوني للخلفية */
             padding: 20px;
             box-sizing: border-box;
-            position: relative;
         }
         #activationSection .container {
             background-color: #ffffff;
@@ -53,7 +54,7 @@
             border-radius: 20px; /* زيادة انحناء الزوايا */
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* ظل أوضح */
             max-width: 450px; /* زيادة عرض الحاوية */
-            width: 100%;
+            width: calc(100% - 40px); /* ليناسب الشاشات الصغيرة مع padding */
             border: 2px solid #90caf9; /* حدود لطيفة */
             box-sizing: border-box;
             animation: fadeIn 0.8s ease-out; /* تأثير ظهور للحاوية */
@@ -140,8 +141,13 @@
             transition: background-color 0.3s, backdrop-filter 0.3s;
             opacity: 0;
             visibility: hidden;
-            display: flex;
-            position: fixed;
+            display: flex; /* لكي يعمل flexbox */
+            position: fixed; /* يبقى ثابتًا ويغطي الشاشة */
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000; /* تأكد من ظهورها فوق كل شيء */
         }
         #activationSection .modal.show { /* class لتفعيل الإظهار */
             opacity: 1;
@@ -234,26 +240,48 @@
             color: #212121;
         }
 
-        /* CSS الخاص بواجهة المدرس (الشات بوت) - يبقى كما هو في معظمه */
+        /* CSS الخاص بواجهة المدرس (الشات بوت) - تحسينات للتجاوب والظهور */
         #teacherAppSection {
-            flex-direction: column; /* ليكون عمودياً مثل تصميم الشات */
+            flex-direction: column; 
             width: 100vw; 
             height: 100vh;
             position: fixed; 
             top: 0;
             left: 0;
+            background-color: #f0f2f5; 
+            overflow: hidden; /* لمنع شريط التمرير على هذا القسم بالذات */
         }
         #teacherAppSection .chat-container {
             background-color: #ffffff;
             border-radius: 1.5rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
+            width: calc(100% - 30px); /* 15px padding على كل جانب */
             max-width: 600px;
-            height: 90vh;
+            /* ارتفاع ديناميكي لـ chat-container */
+            height: calc(100vh - 30px); /* يملأ الارتفاع المتاح مع مسافة 15px من الأعلى والأسفل */
+            max-height: 95vh; /* لضمان ترك مساحة على الحواف في الأجهزة الكبيرة */
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* مهم لمنع التمرير الزائد عن الحد */
+            margin: 15px; /* مسافة من الحواف */
         }
+        /* لجعل شريط الإدخال يظهر دائمًا في الأسفل ويشغل مساحته */
+        #teacherAppSection .chat-history {
+            flex-grow: 1; /* يأخذ المساحة المتبقية */
+            overflow-y: auto; /* لتمكين التمرير في سجل الدردشة فقط */
+            padding: 1.5rem;
+            padding-bottom: 0; /* إزالة الـ padding السفلي لمنع تداخل المحتوى مع شريط الإدخال */
+        }
+        #teacherAppSection .chat-input-area {
+            flex-shrink: 0; /* منع شريط الإدخال من الانكماش */
+            padding: 1rem 1.5rem; /* مسافة علوية وسفلية، والجانبية */
+            border-top: 1px solid #e2e8f0; /* حدود علوية */
+            background-color: #ffffff;
+            display: flex; /* لترتيب حقل الإدخال والزر */
+            gap: 0.75rem;
+            align-items: center; /* لتوسيط العناصر عموديا داخل الشريط */
+        }
+
 
         .chat-header {
             background-color: #6b46c1;
@@ -266,15 +294,6 @@
             font-weight: bold;
         }
 
-        .chat-history {
-            flex-grow: 1;
-            padding: 1.5rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            scroll-behavior: smooth;
-        }
 
         .message-bubble {
             display: flex;
@@ -334,14 +353,6 @@
             color: #2d3748;
             border-bottom-left-radius: 0.25rem;
             padding-top: 2rem;
-        }
-
-        .chat-input-area {
-            display: flex;
-            padding: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-            background-color: #ffffff;
-            gap: 0.75rem;
         }
 
         .chat-input-area textarea {
@@ -505,6 +516,9 @@
             #teacherAppSection .chat-container {
                 height: 100vh;
                 border-radius: 0;
+                margin: 0; /* إزالة المسافة على الأجهزة الصغيرة جداً */
+                width: 100vw; /* ملء العرض بالكامل */
+                max-height: 100vh; /* ملء الارتفاع بالكامل */
             }
             .chat-header {
                 border-radius: 0;
@@ -513,6 +527,36 @@
             }
             body {
                 padding-top: 0;
+            }
+            /* تقليص حجم المودال في الشاشات الصغيرة جداً */
+            #activationSection .modal-content {
+                padding: 20px;
+                border-radius: 10px;
+            }
+            #activationSection .modal-content h3 {
+                font-size: 22px;
+            }
+            #activationSection .modal-content p {
+                font-size: 16px;
+            }
+            #activationSection .modal-content .whatsapp-icon-large {
+                font-size: 4rem;
+            }
+            #activationSection .modal-content .contact-whatsapp-btn {
+                font-size: 18px;
+                padding: 12px 25px;
+            }
+            #activationSection .modal-content .contact-whatsapp-btn i {
+                font-size: 20px;
+            }
+            /* زر الواتساب العائم على الجوال */
+            #contactButton {
+                width: 2.5rem; /* أصغر قليلاً */
+                height: 3.5rem;
+                transform: translateY(-50%) translateX(calc(100% - 2.5rem)); /* يظهر جزء صغير منه */
+            }
+            #contactButton:hover {
+                transform: translateY(-50%) translateX(0); /* يظهر بالكامل عند التحويم */
             }
         }
 
@@ -525,17 +569,23 @@
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
             right: 0;
-            transform: translateY(-50%) translateX(75%);
+            transform: translateY(-50%) translateX(75%); /* إخفاء 75% منه */
+            background-color: #25D366; /* أخضر واتساب */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease-in-out;
-            position: fixed; /* تأكد أنها ثابتة في حالتها */
+            position: fixed; 
             top: 50%;
-            z-index: 40;
+            z-index: 40; /* تأكد أنه فوق محتوى الشات */
         }
 
         #contactButton:hover {
             transform: translateY(-50%) translateX(0);
-            background-color: #4CAF50;
-            background-opacity: 1;
+            background-color: #1DA851; /* أخضر أغمق عند التحويم */
         }
         #contactButton i {
             font-size: 1.75rem;
@@ -565,7 +615,7 @@
                 <a href="https://wa.me/967782343232" target="_blank" class="contact-whatsapp-btn">
                     <i class="fab fa-whatsapp"></i> تواصل معنا عبر واتساب
                 </a>
-                <p class="contact-info-text">للاستفسارات والدعم: +967782343232</p>
+                <p class="contact-info-text">للاستفسارات والدعم الفني، يرجى التواصل على الرقم: +967782343232</p>
             </div>
         </div>
     </div>
@@ -598,7 +648,7 @@
             </div>
         </div>
 
-        <div id="contactButton" class="fixed right-0 top-1/2 transform -translate-y-1/2 w-12 h-16 bg-green-500 bg-opacity-75 hover:bg-opacity-100 rounded-l-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-300 z-40">
+        <div id="contactButton">
             <i class="fab fa-whatsapp text-white text-2xl"></i>
         </div>
 
@@ -823,7 +873,7 @@
                     speakerIcon.classList.add('fas', 'fa-volume-up', 'icon-button');
                     speakerIcon.title = 'تشغيل النطق';
 
-                    const copyIcon = document.createElement('i'); // تم تصحيح هذا السطر
+                    const copyIcon = document.createElement('i'); 
                     copyIcon.classList.add('fas', 'fa-copy', 'icon-button');
                     copyIcon.title = 'نسخ النص الإنجليزي';
 
@@ -1087,4 +1137,4 @@
         });
     </script>
 </body>
-                    </html>
+</html>
