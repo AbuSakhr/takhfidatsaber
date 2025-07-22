@@ -18,7 +18,6 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            /* Removed padding-top as developer banner is no longer fixed at top */
             box-sizing: border-box; /* Include padding in element's total width and height */
         }
 
@@ -44,8 +43,6 @@
             font-size: 1.5rem; /* Reverted to original font size */
             font-weight: bold;
         }
-
-        /* Removed .chat-header .main-title and .chat-header .developer-name styles */
 
         .chat-history {
             flex-grow: 1;
@@ -296,6 +293,29 @@
                 padding-top: 0; /* No padding-top needed for body on mobile */
             }
         }
+
+        /* Custom style for the very narrow contact button */
+        #contactButton {
+            width: 3rem; /* Make it very narrow */
+            height: 4rem; /* Slightly taller to make it noticeable */
+            border-top-left-radius: 1.5rem; /* Rounded top-left */
+            border-bottom-left-radius: 1.5rem; /* Rounded bottom-left */
+            border-top-right-radius: 0; /* No rounded top-right */
+            border-bottom-right-radius: 0; /* No rounded bottom-right */
+            right: 0; /* Align to the right edge */
+            transform: translateY(-50%) translateX(75%); /* Hide most of it, reveal only 25% */
+            /* Adjusted hover to reveal more */
+            transition: all 0.3s ease-in-out;
+        }
+
+        #contactButton:hover {
+            transform: translateY(-50%) translateX(0); /* On hover, slide fully into view */
+            background-color: #4CAF50; /* WhatsApp green on hover */
+            background-opacity: 1;
+        }
+        #contactButton i {
+            font-size: 1.75rem; /* Slightly larger icon */
+        }
     </style>
 </head>
 <body>
@@ -327,11 +347,50 @@
         </div>
     </div>
 
+    <!-- Floating Contact Button -->
+    <div id="contactButton" class="fixed right-0 top-1/2 transform -translate-y-1/2 w-12 h-16 bg-green-500 bg-opacity-75 hover:bg-opacity-100 rounded-l-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-300 z-40">
+        <i class="fab fa-whatsapp text-white text-2xl"></i>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div id="contactModalContent" class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center relative transform transition-all duration-300 scale-95 opacity-0">
+            <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl transition-colors duration-200">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="flex flex-col items-center justify-center mb-6">
+                <div class="bg-green-100 p-4 rounded-full mb-4">
+                    <i class="fab fa-whatsapp text-green-600 text-4xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-green-800 mb-2">للتواصل والاستفسار</h2>
+                <p class="text-lg text-gray-700">يمكنك التواصل مع المطور عبر واتساب:</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-xl mb-6 border border-green-200">
+                <p class="text-2xl font-bold text-green-700 mb-2">
+                    <i class="fab fa-whatsapp text-green-600 mr-2"></i>
+                    +967782343232
+                </p>
+                <a href="https://wa.me/967782343232" target="_blank" class="inline-block bg-green-600 text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-green-700 transition-colors duration-300 shadow-md">
+                    مراسلة عبر واتساب
+                </a>
+            </div>
+            <p class="text-sm text-gray-500">
+                نحن هنا لمساعدتك والإجابة على استفساراتك.
+            </p>
+        </div>
+    </div>
+
     <script>
         // DOM elements
         const chatHistoryDiv = document.getElementById('chatHistory');
         const userMessageInput = document.getElementById('userMessageInput');
         const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+        // New DOM elements for contact button and modal
+        const contactButton = document.getElementById('contactButton');
+        const contactModal = document.getElementById('contactModal');
+        const contactModalContent = document.getElementById('contactModalContent');
+        const closeModalBtn = document.getElementById('closeModalBtn');
 
         // Chat history array to store messages for API context
         let chatHistory = [];
@@ -636,6 +695,26 @@
             }
         }
 
+        // Function to show the contact modal with a smooth transition
+        function showContactModal() {
+            contactModal.classList.remove('hidden');
+            // Trigger reflow to ensure transition plays
+            void contactModalContent.offsetWidth; // This forces a reflow
+            contactModalContent.classList.remove('scale-95', 'opacity-0');
+            contactModalContent.classList.add('scale-100', 'opacity-100');
+        }
+
+        // Function to hide the contact modal with a smooth transition
+        function hideContactModal() {
+            contactModalContent.classList.remove('scale-100', 'opacity-100');
+            contactModalContent.classList.add('scale-95', 'opacity-0');
+            // Wait for transition to complete before hiding fully
+            contactModalContent.addEventListener('transitionend', function handler() {
+                contactModal.classList.add('hidden');
+                contactModalContent.removeEventListener('transitionend', handler); // Clean up event listener
+            }, { once: true }); // Ensure the event listener runs only once
+        }
+
         // Event listeners for sending messages
         sendMessageBtn.addEventListener('click', sendMessage);
         userMessageInput.addEventListener('keypress', (e) => {
@@ -649,6 +728,16 @@
         userMessageInput.addEventListener('input', () => {
             userMessageInput.style.height = 'auto';
             userMessageInput.style.height = userMessageInput.scrollHeight + 'px';
+        });
+
+        // Event listeners for the new contact button and modal
+        contactButton.addEventListener('click', showContactModal);
+        closeModalBtn.addEventListener('click', hideContactModal);
+        // Close modal if clicking outside the content area
+        contactModal.addEventListener('click', (e) => {
+            if (e.target === contactModal) {
+                hideContactModal();
+            }
         });
 
         // Start showing the developer message periodically
