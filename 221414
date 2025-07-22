@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدرس اللغة الإنجليزية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .chat-container {
+            background-color: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: #6b46c1;
+            color: #ffffff;
+            padding: 1.5rem;
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            position: relative;
+        }
+        #userIdDisplay {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0.5rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            direction: ltr;
+        }
+        .chat-history {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            scroll-behavior: smooth;
+        }
+        .message-bubble {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            max-width: 85%;
+        }
+        .message-bubble.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .message-bubble.ai {
+            align-self: flex-start;
+            flex-direction: row;
+        }
+        .message-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 9999px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.25rem;
+            color: #ffffff;
+            flex-shrink: 0;
+        }
+        .message-avatar.user {
+            background-color: #4c51bf;
+        }
+        .message-avatar.ai {
+            background-color: #805ad5;
+        }
+        .message-content {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        .message-bubble.user .message-content {
+            background-color: #e0e7ff;
+            color: #1a202c;
+            border-bottom-right-radius: 0.25rem;
+        }
+        .message-bubble.ai .message-content {
+            background-color: #f3e8ff;
+            color: #2d3748;
+            border-bottom-left-radius: 0.25rem;
+            padding-top: 2rem;
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            background-color: #ffffff;
+            gap: 0.75rem;
+        }
+        .chat-input-area textarea {
+            flex-grow: 1;
+            border: 1px solid #cbd5e0;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            resize: none;
+            min-height: 2.75rem;
+            max-height: 150px;
+            overflow-y: auto;
+            transition: all 0.2s ease-in-out;
+        }
+        .chat-input-area textarea:focus {
+            outline: none;
+            border-color: #805ad5;
+            box-shadow: 0 0 0 2px rgba(128, 90, 213, 0.2);
+        }
+        .chat-input-area button {
+            background-color: #805ad5;
+            color: #ffffff;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .chat-input-area button:hover {
+            background-color: #6b46c1;
+            transform: translateY(-1px);
+        }
+        .chat-input-area button:active {
+            transform: translateY(0);
+        }
+        .loading-chat-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            align-self: flex-start;
+            max-width: 85%;
+        }
+        .loading-chat-indicator .message-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #f3e8ff;
+            color: #2d3748;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            border-bottom-left-radius: 0.25rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .structured-translation {
+            display: block;
+            padding: 0.5rem 0;
+            line-height: 1.8;
+        }
+        .arabic-original {
+            font-weight: bold;
+            color: #3182ce;
+        }
+        .english-part {
+            font-weight: bold;
+            color: #805ad5;
+            margin: 0 0.25rem;
+        }
+        .arabic-pronunciation {
+            color: #4a5568;
+            font-style: italic;
+        }
+        .equals-sign {
+            color: #718096;
+            margin: 0 0.25rem;
+        }
+        .arabic-meaning {
+            color: #2d3748;
+        }
+        .action-buttons {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: flex;
+            gap: 0.25rem;
+            z-index: 10;
+        }
+        .action-buttons .icon-button {
+            cursor: pointer;
+            color: #805ad5;
+            font-size: 0.75rem;
+            padding: 0.25rem;
+            border-radius: 9999px;
+            background-color: #f3e8ff;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.5rem;
+            height: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .action-buttons .icon-button:hover {
+            background-color: #e9d8fd;
+            color: #6b46c1;
+        }
+        .developer-message-bubble {
+            background-color: #e9d8fd;
+            color: #6b46c1;
+            text-align: center;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 1rem auto;
+            max-width: 70%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: opacity 0.5s ease-in-out;
+            opacity: 1;
+        }
+        .developer-message-bubble.hidden {
+            opacity: 0;
+        }
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+            .chat-header {
+                border-radius: 0;
+                font-size: 1.25rem;
+                padding: 1rem;
+            }
+            body {
+                padding-top: 0;
+            }
+        }
+        #contactButton {
+            width: 3rem;
+            height: 4rem;
+            border-top-left-radius: 1.5rem;
+            border-bottom-left-radius: 1.5rem;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            right: 0;
+            transform: translateY(-50%) translateX(75%);
+            transition: all 0.3s ease-in-out;
+        }
+        #contactButton:hover {
+            transform: translateY(-50%) translateX(0);
+            background-color: #4CAF50;
+            background-opacity: 1;
+        }
+        #contactButton i {
+            font-size: 1.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            مدرس اللغة الإنجليزية
+            <div id="userIdDisplay"></div>
+        </div>
+        <div id="chatHistory" class="chat-history">
+            <!-- Initial AI greeting will be added by JavaScript -->
+        </div>
+        <div class="chat-input-area">
+            <textarea id="userMessageInput" placeholder="اكتب رسالتك هنا..." rows="1"></textarea>
+            <button id="sendMessageBtn">
+                <i class="fas fa-paper-plane"></i>
+                إرسال
+            </button>
+        </div>
+    </div>
+
+    <div id="contactButton" class="fixed right-0 top-1/2 transform -translate-y-1/2 w-12 h-16 bg-green-500 bg-opacity-75 hover:bg-opacity-100 rounded-l-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-300 z-40">
+        <i class="fab fa-whatsapp text-white text-2xl"></i>
+    </div>
+
+    <div id="contactModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div id="contactModalContent" class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center relative transform transition-all duration-300 scale-95 opacity-0">
+            <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl transition-colors duration-200">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="flex flex-col items-center justify-center mb-6">
+                <div class="bg-green-100 p-4 rounded-full mb-4">
+                    <i class="fab fa-whatsapp text-green-600 text-4xl"></i>
+                </div>
+                <h2 id="contactTitle" class="text-3xl font-extrabold text-green-800 mb-2"></h2>
+                <p id="contactMessage" class="text-lg text-gray-700"></p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-xl mb-6 border border-green-200">
+                <p id="whatsappNumberDisplay" class="text-2xl font-bold text-green-700 mb-2">
+                    <i class="fab fa-whatsapp text-green-600 mr-2"></i>
+                </p>
+                <a id="whatsappLink" href="#" target="_blank" class="inline-block bg-green-600 text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-green-700 transition-colors duration-300 shadow-md">
+                    مراسلة عبر واتساب
+                </a>
+            </div>
+            <p class="text-sm text-gray-500">
+                نحن هنا لمساعدتك والإجابة على استفساراتك.
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const chatHistoryDiv = document.getElementById('chatHistory');
+        const userMessageInput = document.getElementById('userMessageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const contactButton = document.getElementById('contactButton');
+        const contactModal = document.getElementById('contactModal');
+        const contactModalContent = document.getElementById('contactModalContent');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const whatsappNumberDisplay = document.getElementById('whatsappNumberDisplay');
+        const whatsappLink = document.getElementById('whatsappLink');
+        const contactTitle = document.getElementById('contactTitle');
+        const contactMessage = document.getElementById('contactMessage');
+        const userIdDisplay = document.getElementById('userIdDisplay');
+
+        let db;
+        let auth;
+        let currentUserId = null;
+        let developerMessageIntervalId;
+        let currentDeveloperMessageElement = null;
+        let chatHistoryForApi = []; // This will store messages for the Gemini API context
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        const phoneNumber = '&#43;&#57;&#54;&#55;&#55;&#56;&#50;&#51;&#52;&#51;&#50;&#51;&#50;';
+        whatsappNumberDisplay.innerHTML = `<i class="fab fa-whatsapp text-green-600 mr-2"></i>${phoneNumber}`;
+        const plainPhoneNumber = decodeHtmlEntities(phoneNumber).replace('+', '');
+        whatsappLink.href = `https://wa.me/${plainPhoneNumber}`;
+
+        const developerMessage = '&#x62A;&#x645; &#x62T;&#x637;&#x648;&#x64A;&#x631; &#x647;&#x630;&#x627; &#x627;&#x644;&#x628;&#x648;&#x62A; &#x628;&#x648;&#x627;&#x633;&#x637;&#x629; &#x627;&#x644;&#x645;&#x637;&#x648;&#x631; &#x635;&#x627;&#x628;&#x631;';
+        const fullContactTitle = '&#x644;&#x644;&#x62A;&#x648;&#x627;&#x635;&#x644; &#x648;&#x627;&#x644;&#x627;&#x633;&#x62T;&#x641;&#x633;&#x627;&#x631;';
+        contactTitle.innerHTML = fullContactTitle;
+        const fullContactMessage = '&#x64A;&#x645;&#x643;&#x646;&#x643; &#x627;&#x644;&#x62T;&#x648;&#x627;&#x635;&#x644; &#x645;&#x639; &#x627;&#x644;&#x645;&#x637;&#x648;&#x631; &#x639;&#x628;&#x631; &#x648;&#x627;&#x62A;&#x633;&#x627;&#x628;';
+        contactMessage.innerHTML = fullContactMessage;
+
+        function decodeHtmlEntities(encodedString) {
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = encodedString;
+            return textarea.value;
+        }
+
+        function addMessageToChat(message, sender) {
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('message-bubble', sender);
+
+            const avatarDiv = document.createElement('div');
+            avatarDiv.classList.add('message-avatar', sender);
+            avatarDiv.innerHTML = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+
+            if (sender === 'ai' && message.includes('<div class="structured-translation"')) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = message;
+                const structuredTranslationDiv = tempDiv.querySelector('.structured-translation');
+
+                if (structuredTranslationDiv) {
+                    const actionButtonsDiv = document.createElement('div');
+                    actionButtonsDiv.classList.add('action-buttons');
+
+                    const speakerIcon = document.createElement('i');
+                    speakerIcon.classList.add('fas', 'fa-volume-up', 'icon-button');
+                    speakerIcon.title = 'تشغيل النطق';
+
+                    const copyIcon = document.createElement('i');
+                    copyIcon.classList.add('fas', 'fa-copy', 'icon-button');
+                    copyIcon.title = 'نسخ النص الإنجليزي';
+
+                    actionButtonsDiv.appendChild(speakerIcon);
+                    actionButtonsDiv.appendChild(copyIcon);
+
+                    contentDiv.appendChild(actionButtonsDiv);
+                    contentDiv.appendChild(structuredTranslationDiv);
+
+                    const englishPartSpan = structuredTranslationDiv.querySelector('.english-part');
+                    if (englishPartSpan) {
+                        speakerIcon.addEventListener('click', () => {
+                            speakText(englishPartSpan.textContent);
+                        });
+                        copyIcon.addEventListener('click', () => {
+                            copyTextToClipboard(englishPartSpan.textContent);
+                        });
+                    }
+                } else {
+                    contentDiv.innerHTML = message;
+                }
+            } else {
+                contentDiv.innerHTML = message;
+            }
+
+            messageBubble.appendChild(avatarDiv);
+            messageBubble.appendChild(contentDiv);
+            chatHistoryDiv.appendChild(messageBubble);
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        }
+
+        function toggleLoading(show) {
+            if (show) {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = 'loadingChatIndicator';
+                loadingDiv.classList.add('loading-chat-indicator');
+                loadingDiv.innerHTML = `
+                    <div class="message-avatar ai">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <svg class="spinner h-5 w-5 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>يكتب...</span>
+                    </div>
+                `;
+                chatHistoryDiv.appendChild(loadingDiv);
+                chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+            } else {
+                const loadingDiv = document.getElementById('loadingChatIndicator');
+                if (loadingDiv) {
+                    loadingDiv.remove();
+                }
+            }
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                const voices = speechSynthesis.getVoices();
+                const englishVoices = voices.filter(voice => voice.lang.startsWith('en-'));
+                let selectedVoice = englishVoices.find(voice => voice.name === 'Google US English') ||
+                                   englishVoices.find(voice => voice.name.includes('English (United States)')) ||
+                                   englishVoices.find(voice => voice.default);
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+                speechSynthesis.speak(utterance);
+            } else {
+                console.warn('Web Speech API غير مدعوم في هذا المتصفح.');
+                displayMessageBox('عذرًا، متصفحك لا يدعم تحويل النص إلى كلام.');
+            }
+        }
+
+        function copyTextToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                displayMessageBox('تم نسخ النص إلى الحافظة!', 'success');
+            } catch (err) {
+                displayMessageBox('عذرًا، فشل نسخ النص. يرجى النسخ يدويًا.', 'error');
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function displayMessageBox(message, type = 'info') {
+            let messageBox = document.getElementById('customMessageBox');
+            if (!messageBox) {
+                messageBox = document.createElement('div');
+                messageBox.id = 'customMessageBox';
+                messageBox.classList.add('fixed', 'bottom-4', 'left-1/2', '-translate-x-1/2', 'p-3', 'rounded-lg', 'shadow-lg', 'text-white', 'text-center', 'z-50', 'transition-opacity', 'duration-300', 'opacity-0');
+                document.body.appendChild(messageBox);
+            }
+            messageBox.textContent = message;
+            messageBox.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500');
+            if (type === 'success') {
+                messageBox.classList.add('bg-green-500');
+            } else if (type === 'error') {
+                messageBox.classList.add('bg-red-500');
+            } else {
+                messageBox.classList.add('bg-blue-500');
+            }
+            messageBox.classList.add('opacity-100');
+            setTimeout(() => {
+                messageBox.classList.remove('opacity-100');
+            }, 3000);
+        }
+
+        function showDeveloperMessage() {
+            if (currentDeveloperMessageElement) {
+                currentDeveloperMessageElement.remove();
+                currentDeveloperMessageElement = null;
+            }
+            const devMessageDiv = document.createElement('div');
+            devMessageDiv.classList.add('developer-message-bubble');
+            devMessageDiv.innerHTML = developerMessage;
+            devMessageDiv.id = `dev-msg-${Date.now()}`;
+            chatHistoryDiv.appendChild(devMessageDiv);
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+            currentDeveloperMessageElement = devMessageDiv;
+            setTimeout(() => {
+                if (devMessageDiv && devMessageDiv.parentNode) {
+                    devMessageDiv.classList.add('hidden');
+                    setTimeout(() => {
+                        if (devMessageDiv && devMessageDiv.parentNode) {
+                            devMessageDiv.remove();
+                            currentDeveloperMessageElement = null;
+                        }
+                    }, 500);
+                }
+            }, 5 * 1000);
+        }
+
+        async function sendMessage() {
+            const userMessage = userMessageInput.value.trim();
+            if (!userMessage || !currentUserId) return;
+
+            userMessageInput.value = '';
+            userMessageInput.style.height = 'auto';
+
+            toggleLoading(true);
+
+            try {
+                // Add user message to Firestore
+                await addDoc(collection(db, `artifacts/${appId}/public/data/chatMessages`), {
+                    userId: currentUserId,
+                    sender: 'user',
+                    message: userMessage,
+                    timestamp: serverTimestamp()
+                });
+
+                // System prompt to define the AI's role as an English language tutor with a very specific translation format
+                const systemPrompt = {
+                    role: "user",
+                    parts: [{ text: `أنت مدرس للغة الإنجليزية. هدفك هو مساعدة المستخدمين على ممارسة وتحسين لغتهم الإنجليزية.
+يجب أن تكون استجابتك بالكامل دائمًا فقط هي الترجمة المنظمة بتنسيق HTML <div>. لا تضف أي نص حواري آخر أو تفسيرات أو أمثلة قبل أو بعد هذا <div>.
+يجب أن يكون التنسيق:
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">[العبارة العربية الأصلية]</span><span class="english-part">[الترجمة الإنجليزية]</span>(<span class="arabic-pronunciation">[النطق الصوتي العربي للإنجليزية]</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">[المعنى العربي]</span>
+</div>
+إذا كتب المستخدم باللغة العربية، فقدم الأصل العربي، وترجمته الإنجليزية، والنطق الصوتي، والمعنى العربي.
+إذا كتب المستخدم باللغة الإنجليزية، فقدم الترجمة العربية لعبارته الإنجليزية، والعبارة الإنجليزية نفسها، ونطقها الصوتي، والمعنى العربي.
+مثال على الإخراج المطلوب للغة العربية "انا ذاهب":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">انا ذاهب</span><span class="english-part">I'm going</span>(<span class="arabic-pronunciation">ايم جوه-ينج</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">أنا ذاهب</span>
+</div>
+مثال على الإخراج المطلوب للغة الإنجليزية "Hello":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">مرحبا</span><span class="english-part">Hello</span>(<span class="arabic-pronunciation">هالو</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">أهلاً</span>
+</div>
+مثال على الإخراج المطلوب للغة العربية "لا تدخن":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">لا تدخن</span><span class="english-part">Don't smoke</span>(<span class="arabic-pronunciation">دونت سموك</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">لا تدخن</span>
+</div>
+تأكد من أن النطق الصوتي العربي هو حروف عربية مبسطة، وليس رموز IPA.
+تأكد من أن هيكل HTML صالح ومنسق جيدًا.
+` }]
+                };
+
+                // Use the chatHistoryForApi array which is kept updated by the onSnapshot listener
+                const payload = {
+                    contents: [systemPrompt, ...chatHistoryForApi]
+                };
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const aiResponse = result.candidates[0].content.parts[0].text;
+                    await addDoc(collection(db, `artifacts/${appId}/public/data/chatMessages`), {
+                        userId: currentUserId,
+                        sender: 'ai',
+                        message: aiResponse,
+                        timestamp: serverTimestamp()
+                    });
+                } else {
+                    displayMessageBox("عذرًا، لم أتمكن من معالجة ذلك. يرجى المحاولة مرة أخرى.", 'error');
+                }
+            } catch (error) {
+                console.error('خطأ في استدعاء Gemini API أو Firestore:', error);
+                displayMessageBox("حدث خطأ. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.", 'error');
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        function showContactModal() {
+            contactModal.classList.remove('hidden');
+            void contactModalContent.offsetWidth;
+            contactModalContent.classList.remove('scale-95', 'opacity-0');
+            contactModalContent.classList.add('scale-100', 'opacity-100');
+        }
+
+        function hideContactModal() {
+            contactModalContent.classList.remove('scale-100', 'opacity-100');
+            contactModalContent.classList.add('scale-95', 'opacity-0');
+            contactModalContent.addEventListener('transitionend', function handler() {
+                contactModal.classList.add('hidden');
+                contactModalContent.removeEventListener('transitionend', handler);
+            }, { once: true });
+        }
+
+        sendMessageBtn.addEventListener('click', sendMessage);
+        userMessageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        userMessageInput.addEventListener('input', () => {
+            userMessageInput.style.height = 'auto';
+            userMessageInput.style.height = userMessageInput.scrollHeight + 'px';
+        });
+
+        contactButton.addEventListener('click', showContactModal);
+        closeModalBtn.addEventListener('click', hideContactModal);
+        contactModal.addEventListener('click', (e) => {
+            if (e.target === contactModal) {
+                hideContactModal();
+            }
+        });
+
+        // Firebase Initialization and Authentication
+        window.onload = async () => {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Authenticate user
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        userIdDisplay.textContent = `ID: ${currentUserId}`;
+                        console.log("User authenticated:", currentUserId);
+
+                        // Listen for chat messages in Firestore
+                        const q = query(collection(db, `artifacts/${appId}/public/data/chatMessages`), orderBy('timestamp'));
+                        onSnapshot(q, (snapshot) => {
+                            chatHistoryDiv.innerHTML = ''; // Clear existing messages
+                            chatHistoryForApi = []; // Clear API history
+
+                            // Add initial AI greeting to UI and API history
+                            const initialAiGreeting = 'مرحباً! أنا مدرس اللغة الإنجليزية الخاص بك. كيف يمكنني مساعدتك اليوم؟';
+                            addMessageToChat(initialAiGreeting, 'ai');
+                            chatHistoryForApi.push({ role: "model", parts: [{ text: initialAiGreeting }] });
+
+                            snapshot.docs.forEach((doc) => {
+                                const messageData = doc.data();
+                                // Only add messages from Firestore if they are not the initial AI greeting
+                                // This prevents duplication if the initial greeting was somehow stored (though it shouldn't be with this code)
+                                if (messageData.message !== initialAiGreeting) {
+                                    addMessageToChat(messageData.message, messageData.sender);
+                                    chatHistoryForApi.push({ role: messageData.sender === 'user' ? 'user' : 'model', parts: [{ text: messageData.message }] });
+                                }
+                            });
+                            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // Scroll to bottom after all messages are loaded
+                        }, (error) => {
+                            console.error("Error listening to Firestore:", error);
+                            displayMessageBox("خطأ في جلب الرسائل من قاعدة البيانات.", 'error');
+                        });
+
+                    } else {
+                        currentUserId = null;
+                        userIdDisplay.textContent = 'غير مصادق';
+                        console.log("User not authenticated.");
+                    }
+                });
+
+                showDeveloperMessage();
+                developerMessageIntervalId = setInterval(showDeveloperMessage, 65 * 1000);
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                displayMessageBox("فشل تهيئة Firebase. يرجى تحديث الصفحة.", 'error');
+            }
+        };
+    </script>
+</body>
+</html>
