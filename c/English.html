@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>قريبًا | بوت المعلم الذكي</title>
+
+  <!-- خط اختياري؛ يعمل حتى لو لم يُحمَّل سنستخدم خطوط النظام -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#111a33;
+      --card:#ffffff10;
+      --text:#e8ecf1;
+      --muted:#a9b4c7;
+      --glow1:#8b5cf6;
+      --glow2:#60a5fa;
+      --glow3:#34d399;
+      --glow4:#f472b6;
+      --radius:28px;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: "Cairo", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Arabic", Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 10% -10%, #1c2547 0%, transparent 60%),
+        radial-gradient(900px 700px at 110% 10%, #162042 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+
+    /* خلفية تدرّج متحرك خفيف */
+    .bg-anim{
+      position:fixed; inset:-30%;
+      background: conic-gradient(
+        from 180deg,
+        var(--glow1), var(--glow2), var(--glow3), var(--glow4), var(--glow1)
+      );
+      filter: blur(100px) saturate(130%) opacity(.08);
+      animation: spin 24s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .wrap{
+      position:relative;
+      min-height:100%;
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+
+    .card{
+      position:relative;
+      width:min(720px, 92vw);
+      border-radius:var(--radius);
+      background:var(--card);
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,.35),
+        0 0 0 1px rgba(255,255,255,.06) inset;
+      padding: clamp(28px, 6vw, 48px);
+      text-align:center;
+      overflow: hidden;
+    }
+
+    /* إطار متدرج ناعم */
+    .card::before{
+      content:"";
+      position:absolute; inset:0; padding:1px; border-radius:inherit;
+      background: linear-gradient(135deg, var(--glow1), var(--glow2), var(--glow3), var(--glow4));
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box, 
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events:none;
+    }
+
+    .pill{
+      display:inline-block;
+      font-weight:600;
+      letter-spacing:.5px;
+      font-size: clamp(12px, 2.2vw, 14px);
+      color:#0b1020;
+      background: linear-gradient(90deg, var(--glow1), var(--glow2), var(--glow3));
+      padding:10px 14px;
+      border-radius:999px;
+      box-shadow: 0 6px 16px rgba(96,165,250,.35);
+      margin-bottom: 18px;
+    }
+
+    h1{
+      margin:0 0 12px;
+      font-weight:800;
+      line-height:1.25;
+      font-size: clamp(28px, 6.2vw, 54px);
+      letter-spacing:.2px;
+    }
+
+    /* تدرّج داخل جزء من العنوان */
+    .accent{
+      background: linear-gradient(90deg, var(--glow1), var(--glow2), var(--glow3), var(--glow4));
+      background-size: 200% 100%;
+      -webkit-background-clip:text;
+      background-clip:text;
+      -webkit-text-fill-color: transparent;
+      animation: pan 10s ease-in-out infinite;
+    }
+    @keyframes pan { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+    p{
+      margin: 0 auto;
+      max-width: 48ch;
+      color: var(--muted);
+      font-size: clamp(14px, 2.8vw, 16px);
+      line-height:1.8;
+    }
+
+    .divider{
+      height:1px; width:100%;
+      margin: 22px auto;
+      background: linear-gradient(90deg, transparent, #ffffff40, transparent);
+    }
+
+    /* حركة خفيفة للبطاقة */
+    .card:hover{ transform: translateY(-2px); transition: transform .25s ease; }
+
+    /* دعم وضع الإضاءة */
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg1:#f8fafc;
+        --bg2:#eef2f7;
+        --card:#00000006;
+        --text:#0b1020;
+        --muted:#3b4456;
+      }
+      .bg-anim{ opacity:.06; filter: blur(100px) saturate(110%) }
+      .pill{ color:white }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-anim" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <section class="card" role="status" aria-live="polite">
+      <span class="pill">قريبًا</span>
+      <h1>
+        سيتم إطلاق <span class="accent">بوت المعلم الذكي</span> قريبًا
+      </h1>
+      <div class="divider"></div>
+      <p>
+        صفحة انتظار بسيطة وأنيقة. إذا وصلت إلى هنا، فأنت في المكان الصحيح. حضّر فنجان قهوة وابقَ مترقبًا.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
