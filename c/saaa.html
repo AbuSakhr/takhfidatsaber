@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدرس اللغة الإنجليزية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom styles for the chat interface */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        .chat-container {
+            background-color: #ffffff; /* White chat background */
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            width: 100%;
+            max-width: 600px;
+            height: 90vh; /* Make chat container take more vertical space */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #6b46c1; /* Deep purple header */
+            color: #ffffff;
+            padding: 1.5rem; /* Reverted to original padding */
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem; /* Reverted to original font size */
+            font-weight: bold;
+        }
+
+        .chat-history {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            scroll-behavior: smooth;
+        }
+
+        .message-bubble {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            max-width: 85%;
+        }
+
+        .message-bubble.user {
+            align-self: flex-end;
+            flex-direction: row-reverse; /* User messages on the right */
+        }
+
+        .message-bubble.ai {
+            align-self: flex-start;
+            flex-direction: row; /* AI messages on the left */
+        }
+
+        .message-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 9999px; /* Full circle */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.25rem;
+            color: #ffffff;
+            flex-shrink: 0; /* Prevent avatar from shrinking */
+        }
+
+        .message-avatar.user {
+            background-color: #4c51bf; /* Blue for user */
+        }
+
+        .message-avatar.ai {
+            background-color: #805ad5; /* Purple for AI */
+        }
+
+        .message-content {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem; /* Rounded corners for messages */
+            word-wrap: break-word; /* Ensure long words wrap */
+            white-space: pre-wrap; /* Preserve whitespace and line breaks */
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Subtle shadow for bubbles */
+            position: relative; /* Needed for absolute positioning of action buttons */
+        }
+
+        .message-bubble.user .message-content {
+            background-color: #e0e7ff; /* Light blue for user messages */
+            color: #1a202c; /* Dark text */
+            border-bottom-right-radius: 0.25rem; /* Pointy corner for user */
+        }
+
+        .message-bubble.ai .message-content {
+            background-color: #f3e8ff; /* Lighter purple for AI messages */
+            color: #2d3748; /* Darker text */
+            border-bottom-left-radius: 0.25rem; /* Pointy corner for AI */
+            padding-top: 2rem; /* Add padding to make space for buttons */
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0; /* Light border at the top */
+            background-color: #ffffff;
+            gap: 0.75rem;
+        }
+
+        .chat-input-area textarea {
+            flex-grow: 1;
+            border: 1px solid #cbd5e0; /* Light gray border */
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            resize: none; /* Disable manual resizing */
+            min-height: 2.75rem; /* Minimum height for textarea */
+            max-height: 150px; /* Max height before scrolling */
+            overflow-y: auto;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .chat-input-area textarea:focus {
+            outline: none;
+            border-color: #805ad5; /* Purple border on focus */
+            box-shadow: 0 0 0 2px rgba(128, 90, 213, 0.2); /* Focus ring */
+        }
+
+        .chat-input-area button {
+            background-color: #805ad5; /* Purple send button */
+            color: #ffffff;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .chat-input-area button:hover {
+            background-color: #6b46c1; /* Darker purple on hover */
+            transform: translateY(-1px);
+        }
+
+        .chat-input-area button:active {
+            transform: translateY(0);
+        }
+
+        /* Loading indicator styles */
+        .loading-chat-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            align-self: flex-start; /* Always on the left like AI messages */
+            max-width: 85%;
+        }
+
+        .loading-chat-indicator .message-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #f3e8ff; /* Lighter purple */
+            color: #2d3748;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            border-bottom-left-radius: 0.25rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Structured translation styles */
+        .structured-translation {
+            display: block; /* Ensure it takes full width */
+            padding: 0.5rem 0;
+            line-height: 1.8; /* More spacing for readability */
+        }
+
+        .arabic-original {
+            font-weight: bold;
+            color: #3182ce; /* Blue for original Arabic */
+        }
+
+        .english-part {
+            font-weight: bold;
+            color: #805ad5; /* Purple for English translation */
+            margin: 0 0.25rem; /* Small margin for separation */
+        }
+
+        .arabic-pronunciation {
+            color: #4a5568; /* Gray for pronunciation */
+            font-style: italic;
+        }
+
+        .equals-sign {
+            color: #718096; /* Gray for equals sign */
+            margin: 0 0.25rem;
+        }
+
+        .arabic-meaning {
+            color: #2d3748; /* Dark text for meaning */
+        }
+
+        /* Action buttons container */
+        .action-buttons {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem; /* Position to the right within the RTL bubble */
+            display: flex;
+            gap: 0.25rem; /* Smaller gap between buttons */
+            z-index: 10; /* Ensure buttons are on top */
+        }
+
+        .action-buttons .icon-button {
+            cursor: pointer;
+            color: #805ad5; /* Purple icon */
+            font-size: 0.75rem; /* Very small icon size */
+            padding: 0.25rem; /* Small padding */
+            border-radius: 9999px; /* Fully rounded */
+            background-color: #f3e8ff; /* Light purple background */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            display: flex; /* For centering icon */
+            align-items: center;
+            justify-content: center;
+            width: 1.5rem; /* Fixed width for small button */
+            height: 1.5rem; /* Fixed height for small button */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Very subtle shadow */
+        }
+
+        .action-buttons .icon-button:hover {
+            background-color: #e9d8fd; /* Slightly darker purple on hover */
+            color: #6b46c1;
+        }
+
+        /* Developer message bubble styles */
+        .developer-message-bubble {
+            background-color: #e9d8fd; /* Light purple background */
+            color: #6b46c1; /* Darker purple text */
+            text-align: center;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.875rem; /* Small font size */
+            font-weight: 500;
+            margin: 1rem auto; /* Center the message horizontally */
+            max-width: 70%; /* Limit width */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: opacity 0.5s ease-in-out; /* Fade effect */
+            opacity: 1;
+        }
+
+        .developer-message-bubble.hidden {
+            opacity: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh; /* Full height on small screens */
+                border-radius: 0; /* No rounded corners on full screen */
+            }
+            .chat-header {
+                border-radius: 0;
+                font-size: 1.25rem; /* Adjust font size for mobile */
+                padding: 1rem; /* Adjust padding for mobile */
+            }
+            body {
+                padding-top: 0; /* No padding-top needed for body on mobile */
+            }
+        }
+
+        /* Custom style for the very narrow contact button */
+        #contactButton {
+            width: 3rem; /* Make it very narrow */
+            height: 4rem; /* Slightly taller to make it noticeable */
+            border-top-left-radius: 1.5rem; /* Rounded top-left */
+            border-bottom-left-radius: 1.5rem; /* Rounded bottom-left */
+            border-top-right-radius: 0; /* No rounded top-right */
+            border-bottom-right-radius: 0; /* No rounded bottom-right */
+            right: 0; /* Align to the right edge */
+            transform: translateY(-50%) translateX(75%); /* Hide most of it, reveal only 25% */
+            /* Adjusted hover to reveal more */
+            transition: all 0.3s ease-in-out;
+        }
+
+        #contactButton:hover {
+            transform: translateY(-50%) translateX(0); /* On hover, slide fully into view */
+            background-color: #4CAF50; /* WhatsApp green on hover */
+            background-opacity: 1;
+        }
+        #contactButton i {
+            font-size: 1.75rem; /* Slightly larger icon */
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            مدرس اللغة الإنجليزية
+        </div>
+        <div id="chatHistory" class="chat-history">
+            <!-- Chat messages will be appended here -->
+            <div class="message-bubble ai">
+                <div class="message-avatar ai">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="action-buttons">
+                        <i class="fas fa-volume-up icon-button" title="تشغيل النطق"></i>
+                        <i class="fas fa-copy icon-button" title="نسخ النص الإنجليزي"></i>
+                    </div>
+                    مرحباً! أنا مدرس اللغة الإنجليزية الخاص بك. كيف يمكنني مساعدتك اليوم؟
+                </div>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <textarea id="userMessageInput" placeholder="اكتب رسالتك هنا..." rows="1"></textarea>
+            <button id="sendMessageBtn">
+                <i class="fas fa-paper-plane"></i>
+                إرسال
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Contact Button -->
+    <div id="contactButton" class="fixed right-0 top-1/2 transform -translate-y-1/2 w-12 h-16 bg-green-500 bg-opacity-75 hover:bg-opacity-100 rounded-l-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-300 z-40">
+        <i class="fab fa-whatsapp text-white text-2xl"></i>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div id="contactModalContent" class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center relative transform transition-all duration-300 scale-95 opacity-0">
+            <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl transition-colors duration-200">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="flex flex-col items-center justify-center mb-6">
+                <div class="bg-green-100 p-4 rounded-full mb-4">
+                    <i class="fab fa-whatsapp text-green-600 text-4xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-green-800 mb-2">للتواصل والاستفسار</h2>
+                <p class="text-lg text-gray-700">يمكنك التواصل مع المطور عبر واتساب:</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-xl mb-6 border border-green-200">
+                <p class="text-2xl font-bold text-green-700 mb-2">
+                    <i class="fab fa-whatsapp text-green-600 mr-2"></i>
+                    +967782343232
+                </p>
+                <a href="https://wa.me/967782343232" target="_blank" class="inline-block bg-green-600 text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-green-700 transition-colors duration-300 shadow-md">
+                    مراسلة عبر واتساب
+                </a>
+            </div>
+            <p class="text-sm text-gray-500">
+                نحن هنا لمساعدتك والإجابة على استفساراتك.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const chatHistoryDiv = document.getElementById('chatHistory');
+        const userMessageInput = document.getElementById('userMessageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+        // New DOM elements for contact button and modal
+        const contactButton = document.getElementById('contactButton');
+        const contactModal = document.getElementById('contactModal');
+        const contactModalContent = document.getElementById('contactModalContent');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        // Chat history array to store messages for API context
+        let chatHistory = [];
+        let developerMessageIntervalId; // To store the interval ID
+        let currentDeveloperMessageElement = null; // To keep track of the currently displayed developer message
+
+        /**
+         * Adds a message bubble to the chat history.
+         * @param {string} message - The message content.
+         * @param {'user'|'ai'} sender - The sender of the message ('user' or 'ai').
+         */
+        function addMessageToChat(message, sender) {
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('message-bubble', sender);
+
+            const avatarDiv = document.createElement('div');
+            avatarDiv.classList.add('message-avatar', sender);
+            avatarDiv.innerHTML = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+
+            // If the message is from AI and contains the structured-translation div, parse it
+            if (sender === 'ai' && message.includes('<div class="structured-translation"')) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = message;
+                const structuredTranslationDiv = tempDiv.querySelector('.structured-translation');
+
+                if (structuredTranslationDiv) {
+                    // Create action buttons container
+                    const actionButtonsDiv = document.createElement('div');
+                    actionButtonsDiv.classList.add('action-buttons');
+
+                    // Create speaker icon
+                    const speakerIcon = document.createElement('i');
+                    speakerIcon.classList.add('fas', 'fa-volume-up', 'icon-button');
+                    speakerIcon.title = 'تشغيل النطق';
+
+                    // Create copy icon
+                    const copyIcon = document.createElement('i');
+                    copyIcon.classList.add('fas', 'fa-copy', 'icon-button');
+                    copyIcon.title = 'نسخ النص الإنجليزي';
+
+                    // Append icons to action buttons container
+                    actionButtonsDiv.appendChild(speakerIcon);
+                    actionButtonsDiv.appendChild(copyIcon);
+
+                    // Append action buttons to contentDiv first
+                    contentDiv.appendChild(actionButtonsDiv);
+                    // Then append the structured translation
+                    contentDiv.appendChild(structuredTranslationDiv);
+
+                    const englishPartSpan = structuredTranslationDiv.querySelector('.english-part');
+                    if (englishPartSpan) {
+                        // Add event listener for speaker icon
+                        speakerIcon.addEventListener('click', () => {
+                            speakText(englishPartSpan.textContent);
+                        });
+
+                        // Add event listener for copy icon
+                        copyIcon.addEventListener('click', () => {
+                            copyTextToClipboard(englishPartSpan.textContent);
+                        });
+                    }
+                } else {
+                    // Fallback if structured div not found but expected
+                    contentDiv.innerHTML = message;
+                }
+            } else {
+                // For regular messages or user messages
+                contentDiv.innerHTML = message;
+            }
+
+            messageBubble.appendChild(avatarDiv);
+            messageBubble.appendChild(contentDiv);
+            chatHistoryDiv.appendChild(messageBubble);
+
+            // Scroll to the bottom of the chat history
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        }
+
+        /**
+         * Toggles the loading indicator visibility.
+         * @param {boolean} show - True to show, false to hide.
+         */
+        function toggleLoading(show) {
+            if (show) {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = 'loadingChatIndicator';
+                loadingDiv.classList.add('loading-chat-indicator');
+                loadingDiv.innerHTML = `
+                    <div class="message-avatar ai">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <svg class="spinner h-5 w-5 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>يكتب...</span>
+                    </div>
+                `;
+                chatHistoryDiv.appendChild(loadingDiv);
+                chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+            } else {
+                const loadingDiv = document.getElementById('loadingChatIndicator');
+                if (loadingDiv) {
+                    loadingDiv.remove();
+                }
+            }
+        }
+
+        /**
+         * Speaks the given text using the Web Speech API.
+         * Attempts to find a suitable English voice.
+         * @param {string} text - The text to speak.
+         */
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US'; // Set language to US English
+
+                // Try to find a suitable English voice (preferring male/female)
+                const voices = speechSynthesis.getVoices();
+                const englishVoices = voices.filter(voice => voice.lang.startsWith('en-'));
+
+                // Prioritize 'Google US English' or similar clear voices
+                let selectedVoice = englishVoices.find(voice => voice.name === 'Google US English') ||
+                                   englishVoices.find(voice => voice.name.includes('English (United States)')) ||
+                                   englishVoices.find(voice => voice.default); // Fallback to default English voice
+
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+
+                speechSynthesis.speak(utterance);
+            } else {
+                console.warn('Web Speech API غير مدعوم في هذا المتصفح.');
+                displayMessageBox('عذرًا، متصفحك لا يدعم تحويل النص إلى كلام.');
+            }
+        }
+
+        /**
+         * Copies the given text to the clipboard.
+         * @param {string} text - The text to copy.
+         */
+        function copyTextToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                console.log('Text copied to clipboard:', text);
+                displayMessageBox('تم نسخ النص إلى الحافظة!', 'success');
+            } catch (err) {
+                console.error('Failed to copy text:', err);
+                displayMessageBox('عذرًا، فشل نسخ النص. يرجى النسخ يدويًا.', 'error');
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        /**
+         * Displays a custom message box.
+         * @param {string} message - The message to display.
+         * @param {'success'|'error'|'info'} type - The type of message (for styling).
+         */
+        function displayMessageBox(message, type = 'info') {
+            let messageBox = document.getElementById('customMessageBox');
+            if (!messageBox) {
+                messageBox = document.createElement('div');
+                messageBox.id = 'customMessageBox';
+                messageBox.classList.add('fixed', 'bottom-4', 'left-1/2', '-translate-x-1/2', 'p-3', 'rounded-lg', 'shadow-lg', 'text-white', 'text-center', 'z-50', 'transition-opacity', 'duration-300', 'opacity-0');
+                document.body.appendChild(messageBox);
+            }
+
+            messageBox.textContent = message;
+            messageBox.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500'); // Clear previous types
+            if (type === 'success') {
+                messageBox.classList.add('bg-green-500');
+            } else if (type === 'error') {
+                messageBox.classList.add('bg-red-500');
+            } else {
+                messageBox.classList.add('bg-blue-500');
+            }
+
+            messageBox.classList.add('opacity-100'); // Show message
+            setTimeout(() => {
+                messageBox.classList.remove('opacity-100'); // Hide after 3 seconds
+            }, 3000);
+        }
+
+        /**
+         * Shows the developer message as a temporary bubble in the chat history.
+         */
+        function showDeveloperMessage() {
+            // If there's a currently displayed developer message, remove it first
+            if (currentDeveloperMessageElement) {
+                currentDeveloperMessageElement.remove();
+                currentDeveloperMessageElement = null;
+            }
+
+            const devMessageDiv = document.createElement('div');
+            devMessageDiv.classList.add('developer-message-bubble');
+            devMessageDiv.textContent = 'تم تطوير هذا البوت بواسطة المطور صابر';
+            devMessageDiv.id = `dev-msg-${Date.now()}`; // Unique ID for removal
+
+            chatHistoryDiv.appendChild(devMessageDiv);
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+
+            currentDeveloperMessageElement = devMessageDiv; // Store reference
+
+            // Hide the message after 5 seconds
+            setTimeout(() => {
+                if (devMessageDiv && devMessageDiv.parentNode) {
+                    devMessageDiv.classList.add('hidden'); // Add fade out class
+                    setTimeout(() => {
+                        if (devMessageDiv && devMessageDiv.parentNode) {
+                            devMessageDiv.remove(); // Remove from DOM after fade out
+                            currentDeveloperMessageElement = null;
+                        }
+                    }, 500); // Wait for fade out transition (0.5s)
+                }
+            }, 5 * 1000); // 5 seconds
+        }
+
+        /**
+         * Sends the user's message to the Gemini API and handles the response.
+         */
+        async function sendMessage() {
+            const userMessage = userMessageInput.value.trim();
+            if (!userMessage) return;
+
+            addMessageToChat(userMessage, 'user');
+            chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+            userMessageInput.value = ''; // Clear the input field
+            userMessageInput.style.height = 'auto'; // Reset textarea height
+
+            toggleLoading(true); // Show loading indicator
+
+            try {
+                // System prompt to define the AI's role as an English language tutor with a very specific translation format
+                const systemPrompt = {
+                    role: "user",
+                    parts: [{ text: `أنت مدرس للغة الإنجليزية. هدفك هو مساعدة المستخدمين على ممارسة وتحسين لغتهم الإنجليزية.
+يجب أن تكون استجابتك بالكامل دائمًا فقط هي الترجمة المنظمة بتنسيق HTML <div>. لا تضف أي نص حواري آخر أو تفسيرات أو أمثلة قبل أو بعد هذا <div>.
+يجب أن يكون التنسيق:
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">[العبارة العربية الأصلية]</span><span class="english-part">[الترجمة الإنجليزية]</span>(<span class="arabic-pronunciation">[النطق الصوتي العربي للإنجليزية]</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">[المعنى العربي]</span>
+</div>
+إذا كتب المستخدم باللغة العربية، فقدم الأصل العربي، وترجمته الإنجليزية، والنطق الصوتي، والمعنى العربي.
+إذا كتب المستخدم باللغة الإنجليزية، فقدم الترجمة العربية لعبارته الإنجليزية، والعبارة الإنجليزية نفسها، ونطقها الصوتي، والمعنى العربي.
+مثال على الإخراج المطلوب للغة العربية "انا ذاهب":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">انا ذاهب</span><span class="english-part">I'm going</span>(<span class="arabic-pronunciation">ايم جوه-ينج</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">أنا ذاهب</span>
+</div>
+مثال على الإخراج المطلوب للغة الإنجليزية "Hello":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">مرحبا</span><span class="english-part">Hello</span>(<span class="arabic-pronunciation">هالو</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">أهلاً</span>
+</div>
+مثال على الإخراج المطلوب للغة العربية "لا تدخن":
+<div class="structured-translation" dir="rtl">
+    <span class="arabic-original">لا تدخن</span><span class="english-part">Don't smoke</span>(<span class="arabic-pronunciation">دونت سموك</span>) <span class="equals-sign">=</span> <span class="arabic-meaning">لا تدخن</span>
+</div>
+تأكد من أن النطق الصوتي العربي هو حروف عربية مبسطة، وليس رموز IPA.
+تأكد من أن هيكل HTML صالح ومنسق جيدًا.
+` }]
+                };
+
+                // Merge system prompt with chat history for API call
+                const payload = {
+                    contents: [systemPrompt, ...chatHistory]
+                };
+
+                // API key is provided here
+                const apiKey = "AIzaSyDuaMIc4g0f7b3MQu40NYTQe23HzvXvBQs";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const aiResponse = result.candidates[0].content.parts[0].text;
+                    addMessageToChat(aiResponse, 'ai');
+                    chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
+                } else {
+                    addMessageToChat("عذرًا، لم أتمكن من معالجة ذلك. يرجى المحاولة مرة أخرى.", 'ai');
+                }
+            } catch (error) {
+                console.error('خطأ في استدعاء Gemini API:', error);
+                addMessageToChat("حدث خطأ. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.", 'ai');
+            } finally {
+                toggleLoading(false); // Hide loading indicator
+            }
+        }
+
+        // Function to show the contact modal with a smooth transition
+        function showContactModal() {
+            contactModal.classList.remove('hidden');
+            // Trigger reflow to ensure transition plays
+            void contactModalContent.offsetWidth; // This forces a reflow
+            contactModalContent.classList.remove('scale-95', 'opacity-0');
+            contactModalContent.classList.add('scale-100', 'opacity-100');
+        }
+
+        // Function to hide the contact modal with a smooth transition
+        function hideContactModal() {
+            contactModalContent.classList.remove('scale-100', 'opacity-100');
+            contactModalContent.classList.add('scale-95', 'opacity-0');
+            // Wait for transition to complete before hiding fully
+            contactModalContent.addEventListener('transitionend', function handler() {
+                contactModal.classList.add('hidden');
+                contactModalContent.removeEventListener('transitionend', handler); // Clean up event listener
+            }, { once: true }); // Ensure the event listener runs only once
+        }
+
+        // Event listeners for sending messages
+        sendMessageBtn.addEventListener('click', sendMessage);
+        userMessageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { // Send on Enter, allow Shift+Enter for new line
+                e.preventDefault(); // Prevent new line
+                sendMessage();
+            }
+        });
+
+        // Dynamically adjust textarea height
+        userMessageInput.addEventListener('input', () => {
+            userMessageInput.style.height = 'auto';
+            userMessageInput.style.height = userMessageInput.scrollHeight + 'px';
+        });
+
+        // Event listeners for the new contact button and modal
+        contactButton.addEventListener('click', showContactModal);
+        closeModalBtn.addEventListener('click', hideContactModal);
+        // Close modal if clicking outside the content area
+        contactModal.addEventListener('click', (e) => {
+            if (e.target === contactModal) {
+                hideContactModal();
+            }
+        });
+
+        // Start showing the developer message periodically
+        window.onload = () => {
+            showDeveloperMessage(); // Show immediately on load
+            developerMessageIntervalId = setInterval(showDeveloperMessage, 65 * 1000); // Repeat every 65 seconds
+        };
+    </script>
+</body>
+</html>
