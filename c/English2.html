@@ -316,27 +316,86 @@
         #contactButton i {
             font-size: 1.75rem; /* Slightly larger icon */
         }
+
+        /* New styles for the beautiful pop-up */
+        .modal-body {
+            font-size: 1.25rem; /* Larger font size */
+            line-height: 1.8; /* More comfortable line spacing */
+        }
+        
+        .modal-link-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #25d366; /* WhatsApp green */
+            color: #ffffff;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px; /* Pill shape */
+            font-size: 1.25rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .modal-link-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+        }
+
+        .modal-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .modal-input-container i {
+            position: absolute;
+            right: 1rem;
+            color: #a0aec0; /* Gray icon */
+            font-size: 1.5rem;
+        }
+        
+        .modal-input {
+            padding-right: 3rem; /* Space for the icon */
+            text-align: right;
+        }
     </style>
 </head>
 <body>
-    <div class="chat-container">
+    <div id="unlockModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center transform scale-100 transition-all duration-300">
+            <div class="flex flex-col items-center justify-center mb-6">
+                <div class="bg-green-100 p-4 rounded-full mb-4">
+                    <i class="fab fa-whatsapp text-green-600 text-4xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-gray-800 mb-2">مرحباً بك!</h2>
+                <p class="text-lg text-gray-700 leading-relaxed modal-body">
+                    للدخول إلى البوت، يرجى منك **متابعة قناة البوت** والحصول على الرقم الموجود بجانب اسم القناة وإدخاله في الحقل المخصص بالأسفل.
+                </p>
+                <a href="https://whatsapp.com/channel/0029VbAQz2tKAwEsMzpWJI3y" target="_blank" class="mt-6 modal-link-button">
+                    <i class="fab fa-whatsapp ml-2"></i>
+                    متابعة القناة
+                </a>
+            </div>
+            <div class="mb-4 mt-8 modal-input-container">
+                <input type="text" id="unlockCodeInput" placeholder="أدخل رقم البوت" class="w-full text-center px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500 transition-colors modal-input" maxlength="5">
+                <i class="fas fa-key"></i>
+                <p id="unlockErrorMsg" class="text-red-500 mt-2 hidden">الرقم غير صحيح. يرجى التأكد من الرقم والمحاولة مرة أخرى.</p>
+            </div>
+            <button id="unlockButton" class="w-full bg-purple-600 text-white px-6 py-3 rounded-xl text-xl font-bold hover:bg-purple-700 transition-colors duration-300 shadow-md">
+                الدخول إلى البوت
+            </button>
+        </div>
+    </div>
+
+    <div id="mainContent" class="chat-container hidden">
         <div class="chat-header">
             مدرس اللغة الإنجليزية
         </div>
         <div id="chatHistory" class="chat-history">
             <!-- Chat messages will be appended here -->
-            <div class="message-bubble ai">
-                <div class="message-avatar ai">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <div class="message-content">
-                    <div class="action-buttons">
-                        <i class="fas fa-volume-up icon-button" title="تشغيل النطق"></i>
-                        <i class="fas fa-copy icon-button" title="نسخ النص الإنجليزي"></i>
-                    </div>
-                    مرحباً! أنا مدرس اللغة الإنجليزية الخاص بك. كيف يمكنني مساعدتك اليوم؟
-                </div>
-            </div>
         </div>
         <div class="chat-input-area">
             <textarea id="userMessageInput" placeholder="اكتب رسالتك هنا..." rows="1"></textarea>
@@ -348,7 +407,7 @@
     </div>
 
     <!-- Floating Contact Button -->
-    <div id="contactButton" class="fixed right-0 top-1/2 transform -translate-y-1/2 w-12 h-16 bg-green-500 bg-opacity-75 hover:bg-opacity-100 rounded-l-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-300 z-40">
+    <div id="contactButton" class="fixed right-0 top-1/2 transform -translate-y-1/2 w-12 h-16 bg-green-500 bg-opacity-75 hover:bg-opacity-100 rounded-l-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-300 z-40 hidden">
         <i class="fab fa-whatsapp text-white text-2xl"></i>
     </div>
 
@@ -382,15 +441,34 @@
 
     <script>
         // DOM elements
+        const unlockModal = document.getElementById('unlockModal');
+        const unlockCodeInput = document.getElementById('unlockCodeInput');
+        const unlockButton = document.getElementById('unlockButton');
+        const unlockErrorMsg = document.getElementById('unlockErrorMsg');
+        const mainContent = document.getElementById('mainContent');
+        const contactButton = document.getElementById('contactButton');
         const chatHistoryDiv = document.getElementById('chatHistory');
         const userMessageInput = document.getElementById('userMessageInput');
         const sendMessageBtn = document.getElementById('sendMessageBtn');
 
         // New DOM elements for contact button and modal
-        const contactButton = document.getElementById('contactButton');
         const contactModal = document.getElementById('contactModal');
         const contactModalContent = document.getElementById('contactModalContent');
         const closeModalBtn = document.getElementById('closeModalBtn');
+
+        // قائمة الأرقام السرية الصالحة
+        const VALID_CODES = [
+            '50036',
+            '51036',
+            '59036',
+            '50336',
+            '50066',
+            '50006',
+            '54036',
+            '56036',
+            '54436',
+            '56336'
+        ];
 
         // Chat history array to store messages for API context
         let chatHistory = [];
@@ -666,7 +744,7 @@
                     contents: [systemPrompt, ...chatHistory]
                 };
 
-                // API key is provided here
+                // Add the API key here
                 const apiKey = "AIzaSyDuaMIc4g0f7b3MQu40NYTQe23HzvXvBQs";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
@@ -715,6 +793,23 @@
             }, { once: true }); // Ensure the event listener runs only once
         }
 
+        /**
+         * The function that starts the main bot functionality.
+         */
+        function startBot() {
+            // Show the main chat interface
+            mainContent.classList.remove('hidden');
+            contactButton.classList.remove('hidden');
+            unlockModal.classList.add('hidden');
+
+            // Add the initial welcome message from the AI
+            addMessageToChat("مرحباً! أنا مدرس اللغة الإنجليزية الخاص بك. كيف يمكنني مساعدتك اليوم؟", 'ai');
+
+            // Start showing the developer message periodically
+            showDeveloperMessage(); // Show immediately on load
+            developerMessageIntervalId = setInterval(showDeveloperMessage, 65 * 1000); // Repeat every 65 seconds
+        }
+
         // Event listeners for sending messages
         sendMessageBtn.addEventListener('click', sendMessage);
         userMessageInput.addEventListener('keypress', (e) => {
@@ -740,10 +835,36 @@
             }
         });
 
-        // Start showing the developer message periodically
+        // Event listener for the unlock button
+        unlockButton.addEventListener('click', () => {
+            // Check if the entered code is in the list of valid codes
+            if (VALID_CODES.includes(unlockCodeInput.value.trim())) {
+                // Correct code: save state to localStorage and start the bot
+                localStorage.setItem('isBotUnlocked', 'true');
+                startBot();
+                unlockErrorMsg.classList.add('hidden');
+            } else {
+                // Incorrect code: show error message
+                unlockErrorMsg.classList.remove('hidden');
+            }
+        });
+
+        // Event listener for pressing Enter in the unlock code input
+        unlockCodeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                unlockButton.click(); // Simulate a click on the button
+            }
+        });
+
+        // Initial check on page load
         window.onload = () => {
-            showDeveloperMessage(); // Show immediately on load
-            developerMessageIntervalId = setInterval(showDeveloperMessage, 65 * 1000); // Repeat every 65 seconds
+            // Check if the bot is already unlocked in localStorage
+            if (localStorage.getItem('isBotUnlocked') === 'true') {
+                startBot(); // Start the bot directly if unlocked
+            } else {
+                // Show the unlock modal if not unlocked
+                unlockModal.classList.remove('hidden');
+            }
         };
     </script>
 </body>
