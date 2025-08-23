@@ -39,6 +39,7 @@
             overflow: hidden; /* Manage overflow within this container */
             transition: all 0.5s ease-in-out;
             border: 1px solid rgba(255, 255, 255, 0.5); /* More subtle border */
+            position: relative; /* Make this a positioning context */
         }
 
         .chat-header {
@@ -57,22 +58,22 @@
 
         .chat-history {
             flex-grow: 1;
-            padding: 2rem; /* More padding */
+            padding: 1.2rem; /* Reduced padding */
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1.75rem; /* Increased gap between messages */
+            gap: 0.8rem; /* Reduced gap between messages */
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 10rem; /* Add padding to account for fixed input area */
+            padding-bottom: 9rem; /* Adjusted padding to account for fixed input area */
         }
 
         .message-bubble {
             display: flex;
             align-items: flex-start;
-            gap: 1.25rem; /* Increased gap between avatar and message */
-            max-width: 90%; /* Wider messages */
-            animation: fadeIn 0.6s ease-out; /* Slower, smoother fade in */
+            gap: 0.75rem; /* Reduced gap between avatar and message */
+            max-width: 80%; /* Reduced max-width */
+            animation: fadeIn 0.4s ease-out;
         }
 
         .message-bubble.user {
@@ -86,17 +87,17 @@
         }
 
         .message-avatar {
-            width: 3.25rem; /* Larger avatar */
-            height: 3.25rem;
+            width: 2.5rem; /* Smaller avatar */
+            height: 2.5rem;
             border-radius: 9999px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.6rem; /* Larger icon */
+            font-size: 1.2rem; /* Smaller icon */
             color: #ffffff;
             flex-shrink: 0;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); /* More prominent avatar shadow */
-            border: 4px solid rgba(255, 255, 255, 0.7); /* Thicker, more visible border */
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15); /* Reduced shadow */
+            border: 2px solid rgba(255, 255, 255, 0.5);
         }
 
         .message-avatar.user {
@@ -108,38 +109,41 @@
         }
 
         .message-content {
-            padding: 1.15rem 1.75rem; /* More padding */
-            border-radius: 1.75rem; /* Even more rounded corners for messages */
+            padding: 0.7rem 1rem; /* Reduced padding */
+            border-radius: 1rem; /* Reduced border-radius */
             word-wrap: break-word;
             white-space: pre-wrap;
-            line-height: 1.8;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Enhanced shadow for bubbles */
+            line-height: 1.5;
+            font-size: 0.95rem; /* Smaller font size */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Reduced shadow */
             position: relative;
-            transition: all 0.4s ease-in-out;
+            transition: all 0.3s ease-in-out;
         }
 
         .message-bubble.user .message-content {
             background-color: #e0f2fe;
             color: #2d3748;
-            border-bottom-right-radius: 0.85rem; /* Softer pointy corner */
+            border-bottom-right-radius: 0.4rem; /* Sharper pointy corner */
         }
 
         .message-bubble.ai .message-content {
             background-color: #f3e8ff;
             color: #2d3748;
-            border-bottom-left-radius: 0.85rem; /* Softer pointy corner */
-            padding-top: 2.75rem; /* More space for buttons */
+            border-bottom-left-radius: 0.4rem; /* Sharper pointy corner */
+            padding-top: 2.2rem; /* Adjusted space for buttons */
         }
 
         .chat-input-area {
             display: flex;
-            padding: 1.75rem 2rem; /* More padding */
+            padding: 1.25rem 1.5rem; /* Reduced padding */
             border-top: 1px solid rgba(255, 255, 255, 0.4);
             background-color: rgba(255, 255, 255, 0.95);
-            gap: 1.25rem; /* Increased gap */
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
-            position: absolute; /* Changed to absolute for fixed positioning */
+            gap: 0.8rem; /* Reduced gap */
+            box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.1);
+            position: absolute; /* Changed to absolute for consistent positioning */
             bottom: 0; /* Stick to the bottom */
+            left: 0;
+            right: 0;
             width: 100%; /* Full width */
             box-sizing: border-box; /* Include padding in width */
         }
@@ -147,69 +151,69 @@
         .chat-input-area textarea {
             flex-grow: 1;
             border: 1px solid #cbd5e0;
-            border-radius: 1.25rem; /* More rounded */
-            padding: 1.15rem 1.5rem; /* More padding */
-            font-size: 1.1rem;
+            border-radius: 0.8rem; /* Reduced border-radius */
+            padding: 0.8rem 1rem; /* Reduced padding */
+            font-size: 0.95rem;
             resize: none;
-            min-height: 3.25rem; /* Slightly taller */
-            max-height: 200px; /* Increased max height */
+            min-height: 2.8rem;
+            max-height: 150px;
             overflow-y: auto;
-            transition: all 0.4s ease-in-out;
+            transition: all 0.3s ease-in-out;
             background-color: rgba(249, 250, 251, 0.98);
         }
 
         .chat-input-area textarea:focus {
             outline: none;
             border-color: #6c5ce7;
-            box-shadow: 0 0 0 5px rgba(108, 92, 231, 0.4); /* Enhanced focus ring */
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
         }
 
         .chat-input-area button {
             background: linear-gradient(135deg, #6c5ce7, #8a6de3); /* Send button gradient */
             color: #ffffff;
             border: none;
-            border-radius: 1.25rem; /* More rounded */
-            padding: 1.15rem 1.75rem; /* More padding */
-            font-size: 1.35rem; /* Larger font */
+            border-radius: 0.8rem; /* Reduced border-radius */
+            padding: 0.8rem 1.2rem; /* Reduced padding */
+            font-size: 1.1rem; /* Reduced font size */
             cursor: pointer;
-            transition: all 0.4s ease-in-out;
+            transition: all 0.3s ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.7rem; /* Increased gap */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            gap: 0.5rem; /* Reduced gap */
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
         }
 
         .chat-input-area button:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
         }
 
         .chat-input-area button:active {
             transform: translateY(0);
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Loading indicator styles */
         .loading-chat-indicator {
             display: flex;
             align-items: center;
-            gap: 1.25rem;
+            gap: 0.75rem;
             align-self: flex-start;
-            max-width: 90%;
-            animation: fadeIn 0.5s ease-out;
+            max-width: 80%;
+            animation: fadeIn 0.4s ease-out;
         }
 
         .loading-chat-indicator .message-content {
             display: flex;
             align-items: center;
-            gap: 0.7rem;
+            gap: 0.5rem;
             background-color: #f3e8ff;
             color: #2d3748;
-            padding: 1.15rem 1.75rem;
-            border-radius: 1.75rem;
-            border-bottom-left-radius: 0.85rem;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            padding: 0.8rem 1.2rem;
+            border-radius: 1rem;
+            border-bottom-left-radius: 0.4rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         }
 
         .spinner {
@@ -222,15 +226,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* Structured translation styles */
         .structured-translation {
             display: block;
-            padding: 0.75rem 0;
-            line-height: 2;
+            padding: 0.4rem 0;
+            line-height: 1.6;
         }
 
         .arabic-original {
@@ -241,18 +245,18 @@
         .english-part {
             font-weight: bold;
             color: #8a6de3;
-            margin: 0 0.4rem;
+            margin: 0 0.25rem;
         }
 
         .arabic-pronunciation {
             color: #718096;
             font-style: italic;
-            font-size: 1em;
+            font-size: 0.9em;
         }
 
         .equals-sign {
             color: #a0aec0;
-            margin: 0 0.4rem;
+            margin: 0 0.25rem;
         }
 
         .arabic-meaning {
@@ -262,33 +266,33 @@
         /* Action buttons container */
         .action-buttons {
             position: absolute;
-            top: 0.75rem;
-            right: 0.75rem;
+            top: 0.4rem;
+            right: 0.4rem;
             display: flex;
-            gap: 0.4rem; /* Increased gap */
+            gap: 0.25rem;
             z-index: 10;
         }
 
         .action-buttons .icon-button {
             cursor: pointer;
             color: #6c5ce7;
-            font-size: 0.9rem; /* Slightly larger icon */
-            padding: 0.3rem; /* More padding */
+            font-size: 0.7rem;
+            padding: 0.2rem;
             border-radius: 9999px;
             background-color: #f0eaff;
-            transition: all 0.3s ease-in-out;
+            transition: all 0.2s ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 1.8rem; /* Larger button */
-            height: 1.8rem;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            width: 1.4rem;
+            height: 1.4rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .action-buttons .icon-button:hover {
             background-color: #e9d8fd;
             color: #5a4ac1;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         /* Developer message bubble styles */
@@ -297,16 +301,16 @@
             backdrop-filter: blur(15px);
             color: #6c5ce7;
             text-align: center;
-            padding: 1rem 1.5rem;
-            border-radius: 1.5rem;
-            font-size: 0.95rem;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
             font-weight: 500;
-            margin: 1.5rem auto;
-            max-width: 80%;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
-            transition: opacity 0.7s ease-in-out;
+            margin: 1rem auto;
+            max-width: 75%;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.12);
+            transition: opacity 0.5s ease-in-out;
             opacity: 1;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .developer-message-bubble.hidden {
@@ -322,61 +326,61 @@
             }
             .chat-header {
                 border-radius: 0;
-                font-size: 2rem;
-                padding: 1.5rem;
+                font-size: 1.6rem;
+                padding: 1rem;
             }
             body {
                 padding-top: 0;
             }
             .chat-history {
-                padding-bottom: 10rem; /* Ensure enough space for the fixed input area */
+                padding-bottom: 8rem; /* Adjusted for smaller input area */
             }
             .chat-input-area {
-                position: fixed; /* Ensure it stays at the bottom */
+                position: fixed; /* Changed to fixed for consistent positioning */
                 bottom: 0;
                 left: 0;
                 right: 0;
                 width: 100%;
                 border-radius: 0;
-                padding: 1.5rem 1rem; /* Adjust padding for smaller screens */
+                padding: 1rem 0.7rem; /* Adjusted padding for smaller screens */
             }
         }
 
         /* Custom style for the very narrow contact button */
         #contactButton {
-            width: 4.5rem; /* Even wider */
-            height: 5.5rem; /* Even taller */
-            border-top-left-radius: 2.25rem; /* More rounded */
-            border-bottom-left-radius: 2.25rem;
+            width: 3.5rem;
+            height: 4.5rem;
+            border-top-left-radius: 1.75rem;
+            border-bottom-left-radius: 1.75rem;
             right: 0;
             transform: translateY(-50%) translateX(88%); /* Hide more */
             background-color: #25d366;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         #contactButton:hover {
             transform: translateY(-50%) translateX(0);
             background-color: #1da851;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         #contactButton i {
-            font-size: 2.5rem; /* Even larger icon */
+            font-size: 2rem;
         }
 
         /* New styles for the beautiful pop-up */
         #unlockModal .bg-white, #contactModalContent {
             background-color: rgba(255, 255, 255, 0.99); /* Almost fully opaque white */
-            backdrop-filter: blur(25px);
-            border-radius: 2.75rem;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35); /* Deeper, softer shadow */
-            padding: 3.5rem; /* More padding */
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
         .modal-body {
-            font-size: 1.25rem;
-            line-height: 1.9;
+            font-size: 1.1rem;
+            line-height: 1.7;
             color: #2d3748; /* Darker gray text */
         }
         
@@ -386,17 +390,17 @@
             justify-content: center;
             background: linear-gradient(135deg, #25d366, #1da851); /* Gradient for WhatsApp button */
             color: #ffffff;
-            padding: 1.05rem 2.75rem; /* More padding */
+            padding: 0.9rem 2.2rem;
             border-radius: 9999px;
-            font-size: 1.5rem; /* Larger font */
+            font-size: 1.2rem;
             font-weight: bold;
-            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.6); /* Enhanced shadow */
-            transition: all 0.4s ease-in-out;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+            transition: all 0.3s ease-in-out;
         }
 
         .modal-link-button:hover {
-            transform: translateY(-5px) scale(1.05); /* More pronounced hover effect */
-            box-shadow: 0 15px 35px rgba(37, 211, 102, 0.8);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.7);
         }
 
         .modal-input-container {
@@ -404,61 +408,61 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 3rem; /* More margin */
+            margin-top: 2rem;
         }
 
         .modal-input-container i {
             position: absolute;
-            right: 1.75rem; /* Adjusted position */
+            right: 1.2rem;
             color: #a0aec0;
-            font-size: 2rem; /* Larger icon */
+            font-size: 1.6rem;
         }
         
         .modal-input {
-            padding-right: 4.5rem; /* More space for the icon */
+            padding-right: 3.5rem;
             text-align: right;
-            border-radius: 1.25rem; /* More rounded */
-            padding-top: 1.15rem; /* More vertical padding */
-            padding-bottom: 1.15rem;
-            font-size: 1.2rem;
+            border-radius: 0.9rem;
+            padding-top: 0.9rem;
+            padding-bottom: 0.9rem;
+            font-size: 1rem;
             background-color: rgba(249, 250, 251, 0.99);
             border: 1px solid #c7ced6;
         }
 
         #unlockButton {
             background: linear-gradient(135deg, #6c5ce7, #8a6de3); /* Gradient for unlock button */
-            padding: 1.15rem 2rem;
-            border-radius: 1.75rem;
-            font-size: 1.45rem;
-            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.6);
-            transition: all 0.4s ease-in-out;
+            padding: 0.9rem 1.6rem;
+            border-radius: 1.2rem;
+            font-size: 1.15rem;
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.5);
+            transition: all 0.3s ease-in-out;
         }
 
         #unlockButton:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.7);
         }
 
         #closeModalBtn {
-            font-size: 3rem;
+            font-size: 2.2rem;
             color: #a0aec0;
-            transition: all 0.4s ease-in-out;
+            transition: all 0.3s ease-in-out;
         }
 
         #closeModalBtn:hover {
             color: #718096;
-            transform: rotate(270deg); /* Full rotation on hover */
+            transform: rotate(180deg);
         }
 
         /* Custom message box styles */
         #customMessageBox {
-            bottom: 3rem;
-            padding: 1.15rem 2rem;
-            border-radius: 2rem;
-            font-size: 1.15rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
-            transform: translate(-50%, 30px);
+            bottom: 2rem;
+            padding: 0.9rem 1.6rem;
+            border-radius: 1.5rem;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+            transform: translate(-50%, 20px);
             opacity: 0;
             background: linear-gradient(135deg, #6c5ce7, #8a6de3);
         }
@@ -559,10 +563,22 @@
 
         // Correct unlock code (replace with your actual code)
         const CORRECT_UNLOCK_CODE = "12345"; 
+        const UNLOCK_CODE_KEY = "chatUnlockCode"; // Key for localStorage
+
+        // Check localStorage on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedCode = localStorage.getItem(UNLOCK_CODE_KEY);
+            if (savedCode === CORRECT_UNLOCK_CODE) {
+                startBot();
+            } else {
+                unlockModal.classList.remove("hidden");
+            }
+        });
 
         unlockButton.addEventListener("click", () => {
             if (unlockCodeInput.value === CORRECT_UNLOCK_CODE) {
                 unlockErrorMsg.classList.add("hidden");
+                localStorage.setItem(UNLOCK_CODE_KEY, CORRECT_UNLOCK_CODE); // Save code to localStorage
                 startBot();
             } else {
                 unlockErrorMsg.classList.remove("hidden");
@@ -736,7 +752,7 @@
         /**
          * Displays a custom message box.
          * @param {string} message - The message to display.
-         * @param {"success"|"error"|"info"} type - The type of message (for styling).
+         * @param {"success"|"error"} type - The type of message (for styling).
          */
         function displayMessageBox(message, type = "info") {
             let messageBox = document.getElementById("customMessageBox");
