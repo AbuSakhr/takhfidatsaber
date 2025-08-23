@@ -744,8 +744,8 @@
                     contents: [systemPrompt, ...chatHistory]
                 };
 
-                // API key is provided here
-                const apiKey = "";
+                // Add the API key here
+                const apiKey = "AIzaSyDuaMIc4g0f7b3MQu40NYTQe23HzvXvBQs";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
