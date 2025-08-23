@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Custom styles for the chat interface */
+        html, body {
+            height: 100%; /* Ensure html and body take full height */
+            overflow: hidden; /* Prevent scrolling on html/body to manage it within chat-history */
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #f0f4f8, #e6eaf0); /* Very subtle, almost white gradient background */
@@ -19,7 +24,6 @@
             min-height: 100vh;
             margin: 0;
             box-sizing: border-box;
-            overflow: hidden;
         }
 
         .chat-container {
@@ -32,7 +36,7 @@
             height: 92vh; /* Slightly taller */
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* Manage overflow within this container */
             transition: all 0.5s ease-in-out;
             border: 1px solid rgba(255, 255, 255, 0.5); /* More subtle border */
         }
@@ -60,6 +64,7 @@
             gap: 1.75rem; /* Increased gap between messages */
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 10rem; /* Add padding to account for fixed input area */
         }
 
         .message-bubble {
@@ -133,6 +138,10 @@
             background-color: rgba(255, 255, 255, 0.95);
             gap: 1.25rem; /* Increased gap */
             box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
+            position: absolute; /* Changed to absolute for fixed positioning */
+            bottom: 0; /* Stick to the bottom */
+            width: 100%; /* Full width */
+            box-sizing: border-box; /* Include padding in width */
         }
 
         .chat-input-area textarea {
@@ -318,6 +327,18 @@
             }
             body {
                 padding-top: 0;
+            }
+            .chat-history {
+                padding-bottom: 10rem; /* Ensure enough space for the fixed input area */
+            }
+            .chat-input-area {
+                position: fixed; /* Ensure it stays at the bottom */
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                border-radius: 0;
+                padding: 1.5rem 1rem; /* Adjust padding for smaller screens */
             }
         }
 
