@@ -13,7 +13,7 @@
     <link rel="icon" href="logo.png" type="image/png">
 
     <!-- Open Graph for Social Media -->
-    <meta property="og:title" content="اشتراك Gemini pro (سنة) | المتجر الموثوق في اليمن">
+    <meta property="og:title" content="اشتراك Gemini Al pro (سنة) | المتجر الموثوق في اليمن">
     <meta property="og:description" content="الباقة الأقوى: توليد 3 فيديوهات يومياً، والموديل 'المفكر' Gemini 3 Pro. مساحة 2 تيرابايت وتفعيل فوري.">
     <meta property="og:image" content="https://takhfidatsaber.com/s7.png"> 
     <meta property="og:type" content="product">
@@ -155,6 +155,32 @@
             transform: scale(1.05);
             border-color: #3b82f6;
         }
+        
+        /* Countdown Styles */
+        .countdown-container {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            padding: 0.75rem; /* Adjusted padding */
+            border-radius: 1rem;
+            text-align: center;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+        }
+        .countdown-item {
+            display: inline-block;
+            margin: 0 0.3rem; /* Adjusted margin */
+        }
+        .countdown-value {
+            font-size: 1.5rem; /* Adjusted size */
+            font-weight: 900;
+            color: #d97706;
+            line-height: 1;
+        }
+        .countdown-label {
+            font-size: 0.65rem; /* Adjusted size */
+            color: #b45309;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-purple-100 selection:text-purple-900">
@@ -186,14 +212,42 @@
                 <div class="sticky top-24 space-y-6">
                     <div class="bg-white p-2 rounded-3xl shadow-2xl border border-gray-100 overflow-hidden relative group">
                         <div class="absolute top-4 left-4 z-10 flex flex-col gap-2 items-start">
-                            <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">3 فيديوهات يومياً</span>
+                            <!-- Removed the old red badge (3 فيديوهات يومياً) -->
                             <span class="bg-black/70 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full">خاص بإيميلك الشخصي</span>
                         </div>
                         <img src="s7.png" alt="Gemini Advanced Features" class="w-full h-auto object-cover rounded-2xl transition-transform hover:scale-105 duration-700">
                     </div>
                     
-                    <!-- Quick Specs from Images -->
+                    <!-- Quick Specs from Images - Now including the Countdown -->
                     <div class="grid grid-cols-2 gap-3">
+                        
+                        <!-- Countdown Container (Takes one column) -->
+                         <div class="countdown-container col-span-2">
+                            <h4 class="font-bold text-base text-red-600 mb-2 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-clock animate-pulse"></i> عرض محدود: ينتهي في:
+                            </h4>
+                            <div id="countdown-timer">
+                                <div class="countdown-item">
+                                    <div class="countdown-value" id="days">00</div>
+                                    <div class="countdown-label">يوم</div>
+                                </div>
+                                <div class="countdown-item">
+                                    <div class="countdown-value" id="hours">00</div>
+                                    <div class="countdown-label">ساعة</div>
+                                </div>
+                                <div class="countdown-item">
+                                    <div class="countdown-value" id="minutes">00</div>
+                                    <div class="countdown-label">دقيقة</div>
+                                </div>
+                                <div class="countdown-item">
+                                    <div class="countdown-value" id="seconds">00</div>
+                                    <div class="countdown-label">ثانية</div>
+                                </div>
+                            </div>
+                             <p id="countdown-expired" class="font-bold text-lg text-red-700 mt-2 hidden">انتهى العرض للأسف!</p>
+                        </div>
+                        <!-- End Countdown Container -->
+
                         <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
                             <h4 class="text-xs font-bold text-slate-500 mb-2">نماذج الذكاء الاصطناعي</h4>
                             <div class="flex flex-wrap gap-2">
@@ -245,7 +299,7 @@
                            <p class="text-xs text-slate-500 mt-2">وفر الكثير من قيمة الاشتراك السنوي</p>
                         </div>
                     </div>
-
+                    
                     <button class="btn-whatsapp w-full py-4 px-6 rounded-xl font-display text-xl shadow-lg flex items-center justify-center gap-3 product-page-whatsapp-button" data-product-name="اشتراك Gemini Ultimate (سنة)" data-product-price="9.00">
                         <i class="fa-brands fa-whatsapp text-2xl"></i>
                         <span>اطلب الآن عبر واتساب</span>
@@ -526,6 +580,57 @@
                 }, 300);
             });
         }
+        
+        // --- Countdown Timer Logic ---
+        function startCountdown() {
+            // Set the date we're counting down to: 24 hours from when the user loads the page
+            const expiryTime = localStorage.getItem('countdownExpiry');
+            let countDownDate;
+            
+            if (expiryTime) {
+                countDownDate = new Date(expiryTime).getTime();
+            } else {
+                // Set expiry 24 hours from now (86400000 milliseconds)
+                countDownDate = new Date().getTime() + 86400000;
+                localStorage.setItem('countdownExpiry', countDownDate);
+            }
+            
+            const timerElement = document.getElementById("countdown-timer");
+            const expiredMessage = document.getElementById("countdown-expired");
+
+            const updateTimer = setInterval(function() {
+                // Get today's date and time
+                const now = new Date().getTime();
+                
+                // Find the distance between now and the count down date
+                const distance = countDownDate - now;
+                
+                // Time calculations for days, hours, minutes and seconds
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                // Display the result in the element
+                if (timerElement) {
+                    document.getElementById("days").innerHTML = String(days).padStart(2, '0');
+                    document.getElementById("hours").innerHTML = String(hours).padStart(2, '0');
+                    document.getElementById("minutes").innerHTML = String(minutes).padStart(2, '0');
+                    document.getElementById("seconds").innerHTML = String(seconds).padStart(2, '0');
+                }
+                
+                // If the count down is finished, write some text and hide the button
+                if (distance < 0) {
+                    clearInterval(updateTimer);
+                    if (timerElement) timerElement.style.display = "none";
+                    if (expiredMessage) expiredMessage.style.display = "block";
+                    // Optionally disable the purchase button here
+                }
+            }, 1000);
+        }
+
+        // Start the countdown when the page loads
+        startCountdown();
     </script>
 </body>
 </html>
