@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مستخرج رموز المصادقة الثنائية | 2FA Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/otpauth/9.1.2/otpauth.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+        }
+        .progress-bar-fill {
+            transition: width 1s linear, background-color 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #4f46e5, #7c3aed);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+        /* تحسين مظهر الرمز على الشاشات الصغيرة جداً */
+        @media (max-width: 380px) {
+            .otp-text {
+                font-size: 2.25rem !important;
+            }
+        }
+    </style>
+</head>
+<body class="p-3 md:p-6">
+
+    <div class="w-full max-w-lg md:max-w-xl glass-card rounded-[2rem] p-6 md:p-10 lg:p-12 transition-all duration-500">
+        <!-- Header -->
+        <header class="text-center mb-8 md:mb-10">
+            <div class="inline-block p-3 md:p-4 bg-indigo-50 rounded-2xl mb-4 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-black text-gray-800 mb-2">2FA Live Pro</h1>
+            <p class="text-sm md:text-base text-gray-500 font-medium px-4">الأداة الأسرع والأكثر أماناً لتوليد رموز التحقق</p>
+        </header>
+
+        <!-- Input Section -->
+        <div class="space-y-5 md:space-y-6">
+            <div class="relative">
+                <label for="secretKey" class="block text-xs md:text-sm font-bold text-gray-700 mb-2 mr-1">المفتاح السري (Secret Key)</label>
+                <textarea 
+                    id="secretKey" 
+                    placeholder="أدخل الرمز السري هنا..."
+                    class="w-full p-4 md:p-5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:bg-white outline-none transition-all text-center text-lg md:text-xl uppercase font-mono tracking-wider placeholder:normal-case placeholder:tracking-normal shadow-inner"
+                    rows="2"
+                ></textarea>
+            </div>
+            
+            <button 
+                onclick="generateOTP()"
+                class="w-full btn-primary text-white font-bold py-4 md:py-5 rounded-2xl shadow-xl text-lg md:text-xl flex items-center justify-center gap-3 active:scale-[0.97]"
+            >
+                <span>توليد الرمز</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultContainer" class="hidden mt-8 md:mt-10 animate-fade">
+            <div class="bg-gray-50 rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-gray-100 relative overflow-hidden shadow-sm">
+                <div class="text-[10px] md:text-xs text-indigo-500 font-black uppercase tracking-widest mb-4 md:mb-6 text-center">رمز التحقق النشط</div>
+                
+                <div id="otpDisplay" class="otp-text text-4xl md:text-6xl font-black text-gray-800 text-center mb-6 md:mb-8 flex justify-center items-center tracking-tighter">
+                    <!-- الرمز سيظهر هنا -->
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="h-1.5 w-full bg-gray-200 rounded-full mb-6 overflow-hidden">
+                    <div id="progressBar" class="h-full bg-indigo-600 progress-bar-fill" style="width: 100%"></div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-between items-center">
+                    <button 
+                        onclick="copyCode()"
+                        class="w-full sm:w-auto flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 md:px-8 py-3 rounded-xl transition-all font-bold shadow-md active:scale-95"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        نسخ الرمز
+                    </button>
+                    
+                    <div class="flex items-center gap-2 text-gray-500 bg-white px-3 py-2 rounded-xl border border-gray-100 shadow-sm w-fit">
+                        <span class="relative flex h-2 w-2 md:h-3 md:w-3">
+                            <span id="pingRing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 bg-indigo-500"></span>
+                        </span>
+                        <span class="text-xs md:text-sm font-bold text-gray-600">ينتهي خلال: <span id="secondsLeft" class="text-indigo-600 font-black">30</span>ث</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center px-4">
+            <p class="text-[10px] md:text-xs text-gray-400 font-medium leading-relaxed">
+                جميع العمليات تتم محلياً 100% لتوفير أقصى درجات الخصوصية.<br class="hidden md:block">
+                لا يتم تخزين أو مشاركة مفاتيحك السرية.
+            </p>
+        </footer>
+    </div>
+
+    <!-- Message Box (Custom Error/Success) -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900/95 text-white px-6 py-4 rounded-2xl shadow-2xl opacity-0 translate-y-4 transition-all duration-300 pointer-events-none z-[100] flex items-center gap-3 border border-white/10 backdrop-blur-md w-[90%] max-w-sm">
+        <div id="toastIcon" class="bg-green-500 p-1 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+        <span id="toastText" class="font-bold text-sm">تم نسخ الرمز بنجاح!</span>
+    </div>
+
+    <script>
+        let currentSecret = "";
+        let timerInterval = null;
+        const PERIOD = 30;
+
+        function showMessage(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toastText');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            toastText.innerText = msg;
+            
+            if (type === 'error') {
+                toastIcon.className = "bg-red-500 p-1 rounded-full";
+                toastIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>`;
+            } else {
+                toastIcon.className = "bg-green-500 p-1 rounded-full";
+                toastIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>`;
+            }
+
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+            }, 3000);
+        }
+
+        function generateOTP() {
+            const rawSecret = document.getElementById('secretKey').value.trim().replace(/\s/g, '');
+            
+            if (!rawSecret) {
+                document.getElementById('secretKey').classList.add('border-red-400');
+                setTimeout(() => document.getElementById('secretKey').classList.remove('border-red-400'), 1000);
+                showMessage("يرجى إدخال المفتاح السري أولاً", "error");
+                return;
+            }
+
+            try {
+                // اختبار أولي للتأكد من أن المفتاح صالح قبل البدء
+                new OTPAuth.TOTP({ secret: rawSecret }).generate();
+                
+                currentSecret = rawSecret;
+                document.getElementById('resultContainer').classList.remove('hidden');
+                
+                if (timerInterval) clearInterval(timerInterval);
+                
+                updateUI();
+                timerInterval = setInterval(updateUI, 1000);
+                
+                // التمرير التلقائي للرمز على الشاشات الصغيرة
+                setTimeout(() => {
+                    document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            } catch (e) {
+                showMessage("المفتاح السري غير صالح (يجب أن يكون Base32)", "error");
+            }
+        }
+
+        function updateUI() {
+            try {
+                const totp = new OTPAuth.TOTP({
+                    secret: currentSecret,
+                    digits: 6,
+                    period: PERIOD
+                });
+
+                const token = totp.generate();
+                const secondsPassed = Math.floor(Date.now() / 1000) % PERIOD;
+                const remaining = PERIOD - secondsPassed;
+
+                // تنسيق الرمز بفاصل بصري
+                const formattedToken = `<span class="font-black">${token.substring(0,3)}</span><span class="mx-2 md:mx-3 text-indigo-300 opacity-50 text-3xl md:text-5xl">|</span><span class="font-black">${token.substring(3,6)}</span>`;
+                document.getElementById('otpDisplay').innerHTML = formattedToken;
+                
+                document.getElementById('secondsLeft').innerText = remaining;
+                
+                const progressWidth = (remaining / PERIOD) * 100;
+                const bar = document.getElementById('progressBar');
+                const ring = document.getElementById('pingRing');
+                
+                bar.style.width = progressWidth + '%';
+                
+                if (remaining <= 5) {
+                    bar.classList.replace('bg-indigo-600', 'bg-red-500');
+                    document.getElementById('otpDisplay').classList.add('text-red-500');
+                    ring.classList.replace('bg-indigo-400', 'bg-red-400');
+                } else {
+                    bar.classList.replace('bg-red-500', 'bg-indigo-600');
+                    document.getElementById('otpDisplay').classList.remove('text-red-500');
+                    ring.classList.replace('bg-red-400', 'bg-indigo-400');
+                }
+
+            } catch (error) {
+                clearInterval(timerInterval);
+                document.getElementById('resultContainer').classList.add('hidden');
+                showMessage("حدث خطأ أثناء توليد الرمز", "error");
+            }
+        }
+
+        function copyCode() {
+            const codeText = document.getElementById('otpDisplay').innerText.replace('|', '').replace(/\s/g, '');
+            const tempInput = document.createElement("input");
+            tempInput.value = codeText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            showMessage("تم نسخ الرمز " + codeText + " بنجاح!");
+        }
+
+        document.getElementById('secretKey').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                generateOTP();
+            }
+        });
+    </script>
+</body>
+</html>
+
