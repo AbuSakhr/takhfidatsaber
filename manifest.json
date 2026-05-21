@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "تخفيضات صابر - متجر المنتجات الرقمية",
   "short_name": "تخفيضات صابر",
   "description": "اكتشف أفضل الاشتراكات والمفاتيح الرقمية الأصلية من متجر تخفيضات صابر. ChatGPT Plus, Canva Pro, Office 365, ويندوز, Gemini, Surfshark VPN بأسعار تنافسية وتفعيل فوري في اليمن.",
@@ -28,6 +29,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://takhfidatsaber.com/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "تخفيضات صابر"
+    },
+    {
+      "src": "https://takhfidatsaber.com/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "تخفيضات صابر"
     }
   ]
 }
