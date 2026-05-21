@@ -11,6 +11,14 @@
   "theme_color": "#6c0d98",
   "dir": "rtl",
   "lang": "ar",
+  "categories": ["shopping", "business", "productivity"],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "edge_side_panel": {
+    "preferred_width": 480
+  },
   "icons": [
     {
       "src": "https://takhfidatsaber.com/icon-192.png",
